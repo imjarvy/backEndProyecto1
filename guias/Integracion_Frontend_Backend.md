@@ -13,9 +13,60 @@ autenticación. A diferencia de lo que podría indicar una guía frontend
 anterior, el backend ya tiene operaciones CRUD de usuarios. También cuenta con
 endpoints para asignar roles a usuarios y un flujo de inicio de sesión con JWT.
 
-La URL local configurada para el backend es `http://localhost:8181`. Para
-consumirlo desde una aplicación Angular en el navegador, hay que habilitar y
-verificar CORS para el origen local del frontend.
+La URL local configurada para el backend es `http://localhost:8181`. CORS está
+configurado para `http://localhost:4200` y permite credenciales.
+
+## Actualización: autenticación JWT mediante cookie
+
+Esta sección describe el contrato actual y **reemplaza cualquier indicación
+anterior de guardar el JWT en memoria o enviarlo como Bearer**. El frontend
+Angular no está en este workspace; por tanto, sus servicios e interceptores aún
+deben adaptarse.
+
+### Rutas de autenticación
+
+| Método | Ruta | Funcionamiento |
+|---|---|---|
+| `GET` | `/api/auth/csrf` | Devuelve un token CSRF y establece la cookie legible `XSRF-TOKEN`. Llamar primero. |
+| `POST` | `/api/auth/login` | Recibe `{ "email": "...", "password": "..." }`; enviar cookie CSRF y encabezado `X-XSRF-TOKEN`. Responde `204` y establece `AUTH_TOKEN` HttpOnly; no devuelve el JWT en el cuerpo. |
+| `GET` | `/api/auth/session` | Valida la cookie de autenticación y devuelve los datos seguros `{ "id": number, "email": string }`. |
+| `POST` | `/api/auth/logout` | Enviar CSRF; elimina la cookie `AUTH_TOKEN` y responde `204`. |
+
+Las peticiones del navegador deben incluir credenciales (`withCredentials:
+true`). `AUTH_TOKEN` usa `HttpOnly`, `Path=/api` y `SameSite=Lax`; `XSRF-TOKEN`
+no es HttpOnly para que Angular pueda copiar su valor al encabezado
+`X-XSRF-TOKEN` en operaciones mutables. `Secure` se configura con
+`COOKIE_SECURE` (por defecto `false` localmente; usar `true` con HTTPS).
+
+CORS permite actualmente `http://localhost:4200` con credenciales. Los JWT
+duran 15 minutos. Un token ausente, inválido o vencido produce `401`; la falta
+de permiso dinámico o un token CSRF ausente/inválido produce `403`. El logout
+borra la cookie del navegador, pero no revoca un JWT copiado hasta que expire.
+
+### Archivos backend tocados
+
+- [`AuthController.java`](../src/main/java/com/uc/ms_security/controller/AuthController.java):
+  login con cookie, endpoint CSRF, sesión actual y logout.
+- [`SecurityConfig.java`](../src/main/java/com/uc/ms_security/config/SecurityConfig.java):
+  activa CSRF y CORS con credenciales; registra las rutas públicas y la
+  autenticación dinámica.
+- [`CookieBearerTokenResolver.java`](../src/main/java/com/uc/ms_security/authorization/CookieBearerTokenResolver.java):
+  extrae `AUTH_TOKEN` para que Spring Resource Server valide el JWT.
+- [`SpaCsrfTokenRepository.java`](../src/main/java/com/uc/ms_security/config/SpaCsrfTokenRepository.java):
+  configura la cookie CSRF y su ámbito.
+- [`CurrentUserResponseDTO.java`](../src/main/java/com/uc/ms_security/dto/auth/CurrentUserResponseDTO.java)
+  y [`CsrfTokenResponseDTO.java`](../src/main/java/com/uc/ms_security/dto/auth/CsrfTokenResponseDTO.java):
+  respuestas de sesión y CSRF.
+- [`application.properties`](../src/main/resources/application.properties):
+  propiedades `JWT_COOKIE_NAME` y `COOKIE_SECURE`.
+- [`UserController.java`](../src/main/java/com/uc/ms_security/controller/UserController.java):
+  elimina el CORS local; ahora se aplica globalmente.
+- [`AuthSecurityTests.java`](../src/test/java/com/uc/ms_security/controller/AuthSecurityTests.java):
+  verifica cookie, CSRF, sesión, logout y CORS.
+
+`JwtService.java` y `JwtConfig.java` continúan generando y validando/firmando el
+JWT, respectivamente; el cambio consiste en entregarlo mediante cookie y
+resolverlo desde ella en las siguientes peticiones.
 
 ## Usuarios
 
@@ -104,7 +155,8 @@ roles con asignaciones deben probarse con la API.
 El backend implementa:
 
 - `POST /api/auth/login`, con request `{ "email": "...", "password": "..." }`.
-- Respuesta con `accessToken`, `tokenType` (`Bearer`) y `expiresAt`.
+- El JWT se entrega en la cookie HttpOnly `AUTH_TOKEN`; consultar la sección
+  «Actualización: autenticación JWT mediante cookie» para el contrato vigente.
 - Token JWT con duración de 15 minutos.
 - El endpoint de login es público; el resto de rutas requiere un token Bearer
   válido en el encabezado `Authorization`.
@@ -118,11 +170,10 @@ Implementación relacionada:
 - [`JwtService.java`](../src/main/java/com/uc/ms_security/service/JwtService.java)
 - [`JwtConfig.java`](../src/main/java/com/uc/ms_security/config/JwtConfig.java)
 
-No se encontraron rutas para renovar o cerrar sesión ni un flujo 2FA en la
-implementación inspeccionada. La configuración protege las rutas exigiendo
-autenticación, pero no se observaron reglas de autorización por rol o permiso.
-Por tanto, si las historias requieren diferentes permisos administrativos, el
-backend debe implementarlos: ocultar botones en el frontend no protege la API.
+Existe `POST /api/auth/logout`, que elimina la cookie del navegador; no hay
+renovación ni revocación inmediata del JWT. Las rutas protegidas usan
+autorización dinámica por método HTTP y URL asociada a permisos del usuario.
+Ocultar botones en el frontend no sustituye la protección del backend.
 
 No almacenar, registrar ni mostrar contraseñas o tokens innecesariamente. En
 entornos distintos del desarrollo local, usar HTTPS. La autorización y la
@@ -133,8 +184,8 @@ comportamiento de la sesión en el frontend.
 
 Hay endpoints para perfil bajo `/api/users/{userId}/profile` y para sesiones
 de aplicación bajo `/api/users/{userId}/sessions`. Estos recursos no deben
-confundirse con la sesión JWT de autenticación: no se encontraron endpoints de
-renovación o cierre de sesión JWT.
+confundirse con la sesión JWT de autenticación, consultable en
+`GET /api/auth/session`.
 
 Los endpoints adicionales de detalle de usuario incluyen:
 
@@ -150,8 +201,8 @@ otros datos sensibles.
 
 - Puerto local: `8181`, configurado en
   [`application.properties`](../src/main/resources/application.properties).
-- No se encontró configuración explícita de CORS en el código inspeccionado.
-  Configurar en el backend los orígenes reales del frontend.
+- CORS permite actualmente `http://localhost:4200` con credenciales; actualizar
+  el origen permitido en `SecurityConfig` para otros entornos.
 - No se encontró una dependencia de Swagger/OpenAPI en el `pom.xml`. La
   documentación de este archivo no sustituye una especificación OpenAPI
   publicada.
@@ -189,24 +240,28 @@ archivos:
    disponibles con una herramienta HTTP.
 2. Verificar el cuerpo de respuesta y los errores para alta, consulta,
    actualización, eliminación y asignación de roles.
-3. Habilitar CORS para el origen local del frontend y comprobar la llamada desde
-   el navegador.
+3. Confirmar CORS para el origen del frontend y probar las llamadas con
+   credenciales desde el navegador.
 4. Apuntar el entorno Angular a `http://localhost:8181`.
 5. Implementar el servicio de usuarios con las rutas y DTO confirmados; separar
    los DTO de escritura del modelo de lectura para no incluir contraseña en
    listados o detalles.
 6. Conectar la página CRUD reutilizando los componentes y patrones existentes.
-7. Implementar el login y el envío de `Authorization: Bearer <accessToken>`
-   según el flujo acordado; resolver expiración del token de manera explícita.
+7. Adaptar Angular al flujo de cookie: solicitar `/api/auth/csrf`, usar
+   `withCredentials: true`, enviar el CSRF en `X-XSRF-TOKEN` para operaciones
+   mutables y consultar la sesión en `/api/auth/session`. No esperar el JWT en
+   el cuerpo del login ni enviarlo en `Authorization`.
 8. Ejecutar build, pruebas automatizadas y pruebas manuales de carga, errores,
    validación y permisos.
 
-## Pendientes de confirmar con el equipo backend
+## Pendientes para completar la integración
 
-- Habilitación de CORS y orígenes permitidos.
-- Reglas de autorización por rol/permisos para cada operación.
-- Formato exacto de errores `401` y `403` y tratamiento del token vencido.
-- Si se necesita renovación, revocación o cierre de sesión para JWT.
+- Actualizar y probar el servicio/interceptor Angular para cookies, CORS con
+  credenciales y CSRF; el frontend no está incluido en este workspace.
+- Configurar `COOKIE_SECURE=true` y los orígenes correctos en entornos HTTPS.
+- Si se necesita renovación o revocación inmediata del JWT, implementarla en
+  backend; el logout actual solo borra la cookie.
+- Probar el tratamiento de `401` y `403` en la interfaz.
 - Comportamiento al eliminar usuarios o roles que tengan relaciones.
 - DTO y datos permitidos en los endpoints de detalle de sesión.
 - Publicación de Swagger/OpenAPI y procedimiento de ejecución en cada entorno.
