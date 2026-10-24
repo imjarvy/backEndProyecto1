@@ -18,6 +18,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Optional;
+
 @Configuration
 public class DatabaseSeeder {
 
@@ -48,6 +50,7 @@ public class DatabaseSeeder {
     private final RolePermissionRepository rolePermissionRepository;
     private final PasswordEncoder passwordEncoder;
     private final String adminPassword;
+    private final boolean resetAdminPassword;
 
     public DatabaseSeeder(
             UserRepository userRepository,
@@ -56,7 +59,8 @@ public class DatabaseSeeder {
             UserRoleRepository userRoleRepository,
             RolePermissionRepository rolePermissionRepository,
             PasswordEncoder passwordEncoder,
-            @Value("${SEED_ADMIN_PASSWORD:}") String adminPassword) {
+            @Value("${SEED_ADMIN_PASSWORD:}") String adminPassword,
+            @Value("${RESET_ADMIN_PASSWORD:false}") boolean resetAdminPassword) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.permissionRepository = permissionRepository;
@@ -64,6 +68,7 @@ public class DatabaseSeeder {
         this.rolePermissionRepository = rolePermissionRepository;
         this.passwordEncoder = passwordEncoder;
         this.adminPassword = adminPassword;
+        this.resetAdminPassword = resetAdminPassword;
     }
 
     @Bean
@@ -110,22 +115,45 @@ public class DatabaseSeeder {
     }
 
     private User findOrCreateAdminUser() {
-        return userRepository.findByEmail("admin@uc.edu.co")
-                .orElseGet(() -> {
-                    if (adminPassword == null || adminPassword.isBlank()) {
-                        logger.warn(
-                                "No se creó admin@uc.edu.co: configura "
-                                        + "SEED_ADMIN_PASSWORD para habilitar el usuario semilla"
-                        );
-                        return null;
-                    }
+        Optional<User> existingUser = userRepository.findByEmail("admin@uc.edu.co");
 
-                    User user = new User();
-                    user.setName("Administrador");
-                    user.setEmail("admin@uc.edu.co");
-                    user.setPassword(passwordEncoder.encode(adminPassword));
-                    return userRepository.save(user);
-                });
+        if (existingUser.isPresent()) {
+            User user = existingUser.get();
+            if (!resetAdminPassword) {
+                return user;
+            }
+            if (adminPassword == null || adminPassword.isBlank()) {
+                throw new IllegalStateException(
+                        "SEED_ADMIN_PASSWORD es obligatorio cuando "
+                                + "RESET_ADMIN_PASSWORD=true"
+                );
+            }
+            if (passwordEncoder.matches(adminPassword, user.getPassword())) {
+                logger.info(
+                        "La contraseña de admin@uc.edu.co ya está restablecida"
+                );
+                return user;
+            }
+
+            user.setPassword(passwordEncoder.encode(adminPassword));
+            User savedUser = userRepository.save(user);
+            logger.info("Se restableció la contraseña de admin@uc.edu.co");
+            return savedUser;
+        }
+
+        if (adminPassword == null || adminPassword.isBlank()) {
+            logger.warn(
+                    "No se creó admin@uc.edu.co: configura "
+                            + "SEED_ADMIN_PASSWORD para habilitar el usuario semilla"
+            );
+            return null;
+        }
+
+        User user = new User();
+        user.setName("Administrador");
+        user.setEmail("admin@uc.edu.co");
+        user.setPassword(passwordEncoder.encode(adminPassword));
+        return userRepository.save(user);
     }
 
     private Permission findOrCreatePermission(PermissionSeed seed) {
