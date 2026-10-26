@@ -27,10 +27,14 @@ public class PermissionService {
     private final PermissionMapper permissionMapper;
 
     public PermissionResponseDTO create(CreatePermissionDTO dto) {
-        if (permissionRepository.existsByUrlAndMethod(dto.getUrl(), dto.getMethod())) {
+        if (permissionRepository.existsByUrlAndMethodAndEntity(
+                dto.getUrl(),
+                dto.getMethod(),
+                dto.getEntity()
+        )) {
             throw new ApplicationException(
                     ErrorCase.ALREADY_EXISTS,
-                    "Ya existe un permiso con esta url y método"
+                    "Ya existe un permiso para esta url, método y entidad"
             );
         }
         Permission permission = permissionMapper.toEntity(dto);
@@ -56,10 +60,15 @@ public class PermissionService {
 
     public PermissionResponseDTO update(Long id, UpdatePermissionDTO dto) {
         Permission permission = findPermission(id);
-        if (permissionRepository.existsByUrlAndMethodAndIdNot(dto.getUrl(), dto.getMethod(), id)) {
+        if (permissionRepository.existsByUrlAndMethodAndEntityAndIdNot(
+                dto.getUrl(),
+                dto.getMethod(),
+                dto.getEntity(),
+                id
+        )) {
             throw new ApplicationException(
                     ErrorCase.ALREADY_EXISTS,
-                    "La url y el método pertenecen a otro permiso"
+                    "Ya existe un permiso con esa url, método y entidad"
             );
         }
         permissionMapper.updateEntity(dto, permission);

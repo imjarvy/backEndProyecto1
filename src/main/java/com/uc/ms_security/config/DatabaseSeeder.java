@@ -157,12 +157,16 @@ public class DatabaseSeeder {
     }
 
     private Permission findOrCreatePermission(PermissionSeed seed) {
-        return permissionRepository.findByUrlAndMethod(seed.url(), seed.method())
+        return permissionRepository.findByUrlAndMethodAndEntity(
+                        seed.url(),
+                        seed.method(),
+                        seed.entity()
+                )
                 .orElseGet(() -> {
                     Permission permission = new Permission();
                     permission.setUrl(seed.url());
                     permission.setMethod(seed.method());
-                    permission.setModel(seed.model());
+                    permission.setEntity(seed.entity());
                     return permissionRepository.save(permission);
                 });
     }
@@ -187,6 +191,6 @@ public class DatabaseSeeder {
         }
     }
 
-    private record PermissionSeed(String method, String url, String model) {
+    private record PermissionSeed(String method, String url, String entity) {
     }
 }

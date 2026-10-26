@@ -16,7 +16,7 @@ public class PermissionMapper {
 
         permission.setUrl(dto.getUrl());
         permission.setMethod(dto.getMethod());
-        permission.setModel(dto.getModel());
+        permission.setEntity(dto.getEntity());
 
         return permission;
     }
@@ -24,7 +24,7 @@ public class PermissionMapper {
     public void updateEntity(UpdatePermissionDTO dto, Permission permission) {
         permission.setUrl(dto.getUrl());
         permission.setMethod(dto.getMethod());
-        permission.setModel(dto.getModel());
+        permission.setEntity(dto.getEntity());
     }
 
     public PermissionResponseDTO toResponseDTO(Permission permission) {
@@ -32,7 +32,7 @@ public class PermissionMapper {
                 permission.getId(),
                 permission.getUrl(),
                 permission.getMethod(),
-                permission.getModel()
+                permission.getEntity()
         );
     }
 

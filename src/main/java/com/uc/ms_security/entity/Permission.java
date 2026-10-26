@@ -12,8 +12,9 @@ import java.util.List;
 @Table(
         name = "permissions",
         uniqueConstraints = @UniqueConstraint(
-                columnNames = {"url", "method"}
-        )
+            name = "uk_permission_url_method_entity",
+            columnNames = {"url", "method", "entity"}
+    )
 )
 @Getter
 @Setter
@@ -39,9 +40,9 @@ public class Permission {
 
     @Column(
             nullable = false,
-            length = 100
+            length = 255
     )
-    private String model;
+    private String entity;
 
     @OneToMany(
             mappedBy = "permission",

@@ -57,7 +57,7 @@ class RolePermissionServiceTests {
         permission.setId(2L);
         permission.setUrl("/api/users");
         permission.setMethod("GET");
-        permission.setModel("User");
+        permission.setEntity("User");
 
         when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
         when(permissionRepository.findById(2L)).thenReturn(Optional.of(permission));

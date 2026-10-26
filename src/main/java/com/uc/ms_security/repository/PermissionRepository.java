@@ -12,11 +12,24 @@ import java.util.Optional;
 @Repository
 public interface PermissionRepository extends JpaRepository<Permission, Long> {
 
-    boolean existsByUrlAndMethod(String url, String method);
+    boolean existsByUrlAndMethodAndEntity(
+            String url,
+            String method,
+            String entity
+    );
 
-    boolean existsByUrlAndMethodAndIdNot(String url, String method, Long id);
+    boolean existsByUrlAndMethodAndEntityAndIdNot(
+            String url,
+            String method,
+            String entity,
+            Long id
+    );
 
-    Optional<Permission> findByUrlAndMethod(String url, String method);
+    Optional<Permission> findByUrlAndMethodAndEntity(
+            String url,
+            String method,
+            String entity
+    );
 
     @Query("""
             SELECT DISTINCT p
