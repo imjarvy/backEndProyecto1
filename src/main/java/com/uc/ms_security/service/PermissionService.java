@@ -101,7 +101,7 @@ public class PermissionService {
 
     private String normalizeUrl(String requestUrl) {
         return requestUrl.replaceAll(
-                "(?i)(?<=/)(?:\\d+|[a-f0-9]{24})(?=/|$)",
+                "(?i)(?<=/)(?:\\d+|[a-f0-9]{24}|[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})(?:\\.[a-z0-9]+)?(?=/|$)",
                 "{id}"
         );
     }

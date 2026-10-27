@@ -30,6 +30,12 @@ public class Profile {
     )
     private LocalDate birthDate;
 
+    @Column(name = "profile_image_url", length = 500)
+    private String profileImageUrl;
+
+    @Column(name = "profile_image_key", length = 255)
+    private String profileImageKey;
+
     @OneToOne(
             fetch = FetchType.LAZY
     )
