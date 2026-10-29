@@ -50,7 +50,7 @@ class DatabaseSeederTests {
                 .thenReturn(Optional.of(adminRole));
         when(roleRepository.findByNameIgnoreCase("CONSULTOR"))
                 .thenReturn(Optional.of(consultantRole));
-        when(permissionRepository.findByUrlAndMethod(any(), any()))
+        when(permissionRepository.findByUrlAndMethodAndEntity(any(), any(), any()))
                 .thenReturn(Optional.of(permission));
         when(userRoleRepository.existsByUserIdAndRoleId(1L, 1L))
                 .thenReturn(true);

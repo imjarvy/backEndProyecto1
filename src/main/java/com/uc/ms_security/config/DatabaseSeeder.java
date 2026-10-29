@@ -31,6 +31,11 @@ public class DatabaseSeeder {
             new PermissionSeed("GET", "/api/users/{id}", "User"),
             new PermissionSeed("PUT", "/api/users/{id}", "User"),
             new PermissionSeed("DELETE", "/api/users/{id}", "User"),
+            new PermissionSeed("GET", "/api/users/{id}/profile", "Profile"),
+            new PermissionSeed("POST", "/api/users/{id}/profile", "Profile"),
+            new PermissionSeed("PUT", "/api/users/{id}/profile", "Profile"),
+            new PermissionSeed("DELETE", "/api/users/{id}/profile", "Profile"),
+            new PermissionSeed("GET", "/api/profile-images/{id}", "ProfileImage"),
             new PermissionSeed("GET", "/api/roles", "Role"),
             new PermissionSeed("POST", "/api/roles", "Role"),
             new PermissionSeed("GET", "/api/roles/{id}", "Role"),
@@ -157,12 +162,16 @@ public class DatabaseSeeder {
     }
 
     private Permission findOrCreatePermission(PermissionSeed seed) {
-        return permissionRepository.findByUrlAndMethod(seed.url(), seed.method())
+        return permissionRepository.findByUrlAndMethodAndEntity(
+                        seed.url(),
+                        seed.method(),
+                        seed.entity()
+                )
                 .orElseGet(() -> {
                     Permission permission = new Permission();
                     permission.setUrl(seed.url());
                     permission.setMethod(seed.method());
-                    permission.setModel(seed.model());
+                    permission.setEntity(seed.entity());
                     return permissionRepository.save(permission);
                 });
     }
@@ -187,6 +196,6 @@ public class DatabaseSeeder {
         }
     }
 
-    private record PermissionSeed(String method, String url, String model) {
+    private record PermissionSeed(String method, String url, String entity) {
     }
 }

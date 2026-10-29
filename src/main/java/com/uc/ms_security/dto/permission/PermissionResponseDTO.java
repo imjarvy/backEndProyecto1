@@ -7,5 +7,5 @@ public class PermissionResponseDTO {
     Long id;
     String url;
     String method;
-    String model;
+    String entity;
 }

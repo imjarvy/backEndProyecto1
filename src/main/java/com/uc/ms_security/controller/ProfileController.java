@@ -7,7 +7,9 @@ import com.uc.ms_security.service.ProfileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/users/{userId}/profile")
@@ -24,6 +26,19 @@ public class ProfileController {
         return profileService.create(userId, dto);
     }
 
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProfileResponseDTO createWithImage(
+            @PathVariable Long userId,
+            @Valid @RequestPart("profile") CreateProfileDTO dto,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+        return profileService.create(userId, dto, image);
+    }
+
+    @GetMapping
+    public ProfileResponseDTO findByUserId(@PathVariable Long userId) {
+        return profileService.findByUserId(userId);
+    }
 
     @PutMapping
     public ProfileResponseDTO update(
@@ -32,13 +47,20 @@ public class ProfileController {
         return profileService.update(userId, dto);
     }
 
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ProfileResponseDTO updateWithImage(
+            @PathVariable Long userId,
+            @Valid @RequestPart("profile") UpdateProfileDTO dto,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+        return profileService.update(userId, dto, image);
+    }
+
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long userId) {
         profileService.delete(userId);
     }
 }
-
 
 
 

@@ -29,12 +29,10 @@ public abstract class BasePermissionDTO {
     )
     private String method;
 
-    @NotBlank(
-            message = "El modelo es obligatorio"
-    )
+    @NotBlank(message = "La entidad es obligatoria")
     @Size(
-            max = 100,
-            message = "El modelo debe tener máximo 100 caracteres"
+            max = 255,
+            message = "La entidad debe tener máximo 255 caracteres"
     )
-    private String model;
+    private String entity;
 }

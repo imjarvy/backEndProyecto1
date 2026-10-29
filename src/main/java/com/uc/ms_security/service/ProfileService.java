@@ -12,6 +12,8 @@ import com.uc.ms_security.repository.ProfileRepository;
 import com.uc.ms_security.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -20,8 +22,18 @@ public class ProfileService {
     private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
     private final ProfileMapper profileMapper;
+    private final ProfileImageStorage profileImageStorage;
 
+    @Transactional
     public ProfileResponseDTO create(Long userId, CreateProfileDTO dto) {
+        return create(userId, dto, null);
+    }
+
+    @Transactional
+    public ProfileResponseDTO create(
+            Long userId,
+            CreateProfileDTO dto,
+            MultipartFile image) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApplicationException(
                         ErrorCase.NOT_FOUND,
@@ -38,25 +50,68 @@ public class ProfileService {
         Profile profile = profileMapper.toEntity(dto);
         profile.setUser(user);
 
-        Profile savedProfile = profileRepository.save(profile);
-        return profileMapper.toResponseDTO(savedProfile);
+        ProfileImageStorage.StoredProfileImage storedImage = null;
+        try {
+            if (image != null && !image.isEmpty()) {
+                storedImage = profileImageStorage.store(image);
+                profile.setProfileImageUrl(storedImage.url());
+                profile.setProfileImageKey(storedImage.key());
+            }
+
+            Profile savedProfile = profileRepository.save(profile);
+            return profileMapper.toResponseDTO(savedProfile);
+        } catch (RuntimeException exception) {
+            if (storedImage != null) {
+                profileImageStorage.delete(storedImage.key());
+            }
+            throw exception;
+        }
     }
 
+    @Transactional
     public ProfileResponseDTO update(Long userId, UpdateProfileDTO dto) {
+        return update(userId, dto, null);
+    }
+
+    @Transactional
+    public ProfileResponseDTO update(
+            Long userId,
+            UpdateProfileDTO dto,
+            MultipartFile image) {
         Profile profile = findProfile(userId);
 
         profileMapper.updateEntity(dto, profile);
-        Profile updatedProfile = profileRepository.save(profile);
+        String oldImageKey = profile.getProfileImageKey();
+        ProfileImageStorage.StoredProfileImage storedImage = null;
+        try {
+            if (image != null && !image.isEmpty()) {
+                storedImage = profileImageStorage.store(image);
+                profile.setProfileImageUrl(storedImage.url());
+                profile.setProfileImageKey(storedImage.key());
+            }
 
-        return profileMapper.toResponseDTO(updatedProfile);
+            Profile updatedProfile = profileRepository.save(profile);
+            if (storedImage != null && oldImageKey != null) {
+                profileImageStorage.delete(oldImageKey);
+            }
+            return profileMapper.toResponseDTO(updatedProfile);
+        } catch (RuntimeException exception) {
+            if (storedImage != null) {
+                profileImageStorage.delete(storedImage.key());
+            }
+            throw exception;
+        }
     }
 
     public ProfileResponseDTO findByUserId(Long userId) {
         return profileMapper.toResponseDTO(findProfile(userId));
     }
 
+    @Transactional
     public void delete(Long userId) {
-        profileRepository.delete(findProfile(userId));
+        Profile profile = findProfile(userId);
+        profileRepository.delete(profile);
+        profileImageStorage.delete(profile.getProfileImageKey());
     }
 
     private Profile findProfile(Long userId) {
@@ -67,7 +122,6 @@ public class ProfileService {
                 ));
     }
 }
-
 
 
 

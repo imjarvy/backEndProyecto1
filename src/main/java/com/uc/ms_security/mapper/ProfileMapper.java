@@ -33,6 +33,7 @@ public class ProfileMapper {
                 profile.getId(),
                 profile.getPhone(),
                 profile.getBirthDate(),
+                profile.getProfileImageUrl(),
                 profile.getUser().getId()
         );
     }
