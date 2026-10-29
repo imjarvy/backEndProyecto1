@@ -76,6 +76,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/auth/login",
+                                "/api/auth/oauth",
                                 "/api/auth/csrf",
                                 "/api/auth/logout"
                         ).permitAll()

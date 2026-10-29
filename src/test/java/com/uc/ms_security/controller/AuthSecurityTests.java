@@ -8,6 +8,7 @@ import com.uc.ms_security.entity.User;
 import com.uc.ms_security.authorization.CookieBearerTokenResolver;
 import com.uc.ms_security.service.AuthService;
 import com.uc.ms_security.service.JwtService;
+import com.uc.ms_security.service.OAuthService;
 import com.uc.ms_security.service.PermissionService;
 import com.uc.ms_security.service.SessionService;
 import com.uc.ms_security.service.UserService;
@@ -75,6 +76,9 @@ class AuthSecurityTests {
     private AuthService authService;
 
     @MockitoBean
+    private OAuthService oauthService;
+
+    @MockitoBean
     private UserService userService;
 
     @MockitoBean
@@ -132,6 +136,67 @@ class AuthSecurityTests {
                                 org.hamcrest.Matchers.containsString("SameSite=Lax")
                         )
                 ));
+    }
+
+    @Test
+    void oauthEndpointIsPublicAndSetsSameAuthenticationCookie() throws Exception {
+        AuthResponseDTO token = new AuthResponseDTO(
+                "oauth-token",
+                "Bearer",
+                "oauth-token-id",
+                Instant.now().plusSeconds(900)
+        );
+        when(oauthService.login(any())).thenReturn(token);
+
+        CsrfRequest csrf = getCsrfToken();
+        mockMvc.perform(post("/api/auth/oauth")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(csrf.cookie())
+                        .header("X-XSRF-TOKEN", csrf.token())
+                        .content("""
+                                {
+                                  "idToken": "firebase-id-token"
+                                }
+                                """))
+                .andExpect(status().isNoContent())
+                .andExpect(content().string(""))
+                .andExpect(header().string(
+                        "Set-Cookie",
+                        org.hamcrest.Matchers.allOf(
+                                org.hamcrest.Matchers.containsString("AUTH_TOKEN=oauth-token"),
+                                org.hamcrest.Matchers.containsString("Path=/api"),
+                                org.hamcrest.Matchers.containsString("HttpOnly"),
+                                org.hamcrest.Matchers.containsString("SameSite=Lax")
+                        )
+                ));
+    }
+
+    @Test
+    void oauthWithoutCsrfTokenIsRejected() throws Exception {
+        mockMvc.perform(post("/api/auth/oauth")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "idToken": "firebase-id-token"
+                                }
+                                """))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void oauthWithMissingIdTokenIsRejected() throws Exception {
+        CsrfRequest csrf = getCsrfToken();
+
+        mockMvc.perform(post("/api/auth/oauth")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(csrf.cookie())
+                        .header("X-XSRF-TOKEN", csrf.token())
+                        .content("""
+                                {
+                                  "idToken": " "
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
