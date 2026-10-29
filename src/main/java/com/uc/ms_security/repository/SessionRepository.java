@@ -16,17 +16,10 @@ public interface SessionRepository
             Long userId
     );
 
-    boolean existsByTokenId(String tokenId);
+    boolean existsByToken(String token);
 
-    boolean existsByTokenIdAndIdNot(
-            String tokenId,
+    boolean existsByTokenAndIdNot(
+            String token,
             Long id
     );
-
-    boolean existsByTokenIdAndUserIdAndExpirationAfter(
-            String tokenId,
-            Long userId,
-            java.time.LocalDateTime expiration);
-
-    long deleteByTokenId(String tokenId);
 }

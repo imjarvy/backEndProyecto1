@@ -10,13 +10,9 @@ import com.uc.ms_security.mapper.SessionMapper;
 import com.uc.ms_security.repository.SessionRepository;
 import com.uc.ms_security.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -28,16 +24,14 @@ public class SessionService {
 
     public SessionResponseDTO create(
             Long userId,
-            Long authenticatedUserId,
             SessionRequestDTO dto) {
 
-        requireOwner(userId, authenticatedUserId);
         User user = findUser(userId);
 
-        if (sessionRepository.existsByTokenId(dto.getTokenId())) {
+        if (sessionRepository.existsByToken(dto.getToken())) {
             throw new ApplicationException(
-                    ErrorCase.ALREADY_EXISTS,
-                    "El identificador de sesión ya está registrado"
+                ErrorCase.ALREADY_EXISTS,
+                    "El token ya está registrado"
             );
         }
 
@@ -49,10 +43,7 @@ public class SessionService {
         return sessionMapper.toResponseDTO(savedSession);
     }
 
-    public List<SessionResponseDTO> findAllByUserId(
-            Long userId,
-            Long authenticatedUserId) {
-        requireOwner(userId, authenticatedUserId);
+    public List<SessionResponseDTO> findAllByUserId(Long userId) {
         findUser(userId);
 
         List<Session> sessions =
@@ -63,9 +54,7 @@ public class SessionService {
 
     public SessionResponseDTO findById(
             Long userId,
-            Long authenticatedUserId,
             Long sessionId) {
-        requireOwner(userId, authenticatedUserId);
 
         return sessionMapper.toResponseDTO(
                 findSession(userId, sessionId)
@@ -74,20 +63,18 @@ public class SessionService {
 
     public SessionResponseDTO update(
             Long userId,
-            Long authenticatedUserId,
             Long sessionId,
             SessionRequestDTO dto) {
-        requireOwner(userId, authenticatedUserId);
 
         Session session = findSession(userId, sessionId);
 
-        if (sessionRepository.existsByTokenIdAndIdNot(
-                dto.getTokenId(),
+        if (sessionRepository.existsByTokenAndIdNot(
+                dto.getToken(),
                 sessionId)) {
 
-            throw new ApplicationException(
+                throw new ApplicationException(
                     ErrorCase.ALREADY_EXISTS,
-                    "El identificador de sesión ya está registrado"
+                    "El token ya está registrado"
             );
         }
 
@@ -100,40 +87,11 @@ public class SessionService {
 
     public void delete(
             Long userId,
-            Long authenticatedUserId,
             Long sessionId) {
-        requireOwner(userId, authenticatedUserId);
 
         sessionRepository.delete(
                 findSession(userId, sessionId)
         );
-    }
-
-    public void registerAuthenticationSession(
-            User user,
-            String tokenId,
-            java.time.Instant expiresAt) {
-        Session session = new Session();
-        session.setTokenId(tokenId);
-        session.setExpiration(
-                LocalDateTime.ofInstant(expiresAt, ZoneOffset.UTC)
-        );
-        session.setUser(user);
-        sessionRepository.save(session);
-    }
-
-    public void revokeAuthenticationSession(String tokenId) {
-        if (tokenId != null && !tokenId.isBlank()) {
-            sessionRepository.deleteByTokenId(tokenId);
-        }
-    }
-
-    private void requireOwner(Long userId, Long authenticatedUserId) {
-        if (!Objects.equals(userId, authenticatedUserId)) {
-            throw new AccessDeniedException(
-                    "No está autorizado para acceder a las sesiones de este usuario"
-            );
-        }
     }
 
     private User findUser(Long userId) {

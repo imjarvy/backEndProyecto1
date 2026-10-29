@@ -4,8 +4,9 @@ import com.uc.ms_security.dto.auth.AuthResponseDTO;
 import com.uc.ms_security.dto.auth.CsrfTokenResponseDTO;
 import com.uc.ms_security.dto.auth.CurrentUserResponseDTO;
 import com.uc.ms_security.dto.auth.LoginRequestDTO;
+import com.uc.ms_security.dto.auth.OAuthLoginRequestDTO;
 import com.uc.ms_security.service.AuthService;
-import com.uc.ms_security.service.SessionService;
+import com.uc.ms_security.service.OAuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +27,7 @@ import java.time.Instant;
 public class AuthController {
 
     private final AuthService authService;
-    private final SessionService sessionService;
+    private final OAuthService oauthService;
 
     @Value("${security.jwt.cookie-name:AUTH_TOKEN}")
     private String cookieName;
@@ -36,13 +37,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody LoginRequestDTO dto) {
-        AuthResponseDTO token = authService.login(dto);
-        Duration maxAge = Duration.between(Instant.now(), token.expiresAt());
-        ResponseCookie cookie = authCookie(token.accessToken(), maxAge);
+        return authenticated(authService.login(dto));
+    }
 
-        return ResponseEntity.noContent()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .build();
+    @PostMapping("/oauth")
+    public ResponseEntity<Void> oauth(
+            @Valid @RequestBody OAuthLoginRequestDTO dto) {
+
+        return authenticated(oauthService.login(dto));
     }
 
     @GetMapping("/csrf")
@@ -59,17 +61,21 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(
-            @AuthenticationPrincipal Jwt jwt) {
-        if (jwt != null) {
-            sessionService.revokeAuthenticationSession(jwt.getId());
-        }
-
+    public ResponseEntity<Void> logout() {
         return ResponseEntity.noContent()
                 .header(
                         HttpHeaders.SET_COOKIE,
                         authCookie("", Duration.ZERO).toString()
                 )
+                .build();
+    }
+
+    private ResponseEntity<Void> authenticated(AuthResponseDTO token) {
+        Duration maxAge = Duration.between(Instant.now(), token.expiresAt());
+        ResponseCookie cookie = authCookie(token.accessToken(), maxAge);
+
+        return ResponseEntity.noContent()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .build();
     }
 

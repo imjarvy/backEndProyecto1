@@ -9,11 +9,8 @@ import com.uc.ms_security.authorization.CookieBearerTokenResolver;
 import com.uc.ms_security.service.AuthService;
 import com.uc.ms_security.service.JwtService;
 import com.uc.ms_security.service.PermissionService;
-import com.uc.ms_security.service.SessionService;
 import com.uc.ms_security.service.UserService;
-import com.uc.ms_security.repository.SessionRepository;
 import jakarta.servlet.http.Cookie;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -37,9 +34,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -80,21 +74,6 @@ class AuthSecurityTests {
     @MockitoBean
     private PermissionService permissionService;
 
-    @MockitoBean
-    private SessionService sessionService;
-
-    @MockitoBean
-    private SessionRepository sessionRepository;
-
-    @BeforeEach
-    void activeSessionValidatorAcceptsRegisteredTokens() {
-        when(sessionRepository.existsByTokenIdAndUserIdAndExpirationAfter(
-                anyString(),
-                anyLong(),
-                any()
-        )).thenReturn(true);
-    }
-
     @TestConfiguration
     @EnableWebSecurity
     static class WebSecurityTestConfiguration {
@@ -105,7 +84,6 @@ class AuthSecurityTests {
         AuthResponseDTO token = new AuthResponseDTO(
                 "signed-token",
                 "Bearer",
-                "token-id",
                 Instant.now().plusSeconds(900)
         );
         when(authService.login(any())).thenReturn(token);
@@ -278,23 +256,6 @@ class AuthSecurityTests {
     }
 
     @Test
-    void currentSessionRejectsTokenWithoutActiveSessionRecord() throws Exception {
-        User user = new User();
-        user.setId(1L);
-        user.setEmail("ana@example.com");
-        AuthResponseDTO token = jwtService.generateToken(user);
-        when(sessionRepository.existsByTokenIdAndUserIdAndExpirationAfter(
-                anyString(),
-                anyLong(),
-                any()
-        )).thenReturn(false);
-
-        mockMvc.perform(get("/api/auth/session")
-                                .cookie(new Cookie("AUTH_TOKEN", token.accessToken())))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
     void logoutClearsAuthenticationCookieAndRequiresCsrf() throws Exception {
         CsrfRequest csrf = getCsrfToken();
 
@@ -311,23 +272,6 @@ class AuthSecurityTests {
                                 org.hamcrest.Matchers.containsString("HttpOnly")
                         )
                 ));
-    }
-
-    @Test
-    void logoutRevokesAuthenticatedSession() throws Exception {
-        User user = new User();
-        user.setId(1L);
-        user.setEmail("ana@example.com");
-        AuthResponseDTO token = jwtService.generateToken(user);
-        CsrfRequest csrf = getCsrfToken();
-
-        mockMvc.perform(post("/api/auth/logout")
-                        .cookie(new Cookie("AUTH_TOKEN", token.accessToken()))
-                        .cookie(csrf.cookie())
-                        .header("X-XSRF-TOKEN", csrf.token()))
-                .andExpect(status().isNoContent());
-
-        verify(sessionService).revokeAuthenticationSession(token.tokenId());
     }
 
     @Test

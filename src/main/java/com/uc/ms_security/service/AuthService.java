@@ -17,7 +17,6 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final SessionService sessionService;
 
     public AuthResponseDTO login(LoginRequestDTO dto) {
         User user = userRepository.findByEmail(dto.getEmail())
@@ -27,13 +26,7 @@ public class AuthService {
             throw unauthorized();
         }
 
-        AuthResponseDTO token = jwtService.generateToken(user);
-        sessionService.registerAuthenticationSession(
-                user,
-                token.tokenId(),
-                token.expiresAt()
-        );
-        return token;
+        return jwtService.generateToken(user);
     }
 
     private ApplicationException unauthorized() {

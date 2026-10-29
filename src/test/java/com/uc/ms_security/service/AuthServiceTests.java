@@ -25,7 +25,6 @@ class AuthServiceTests {
     private final UserRepository userRepository = mock(UserRepository.class);
     private final PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
     private final JwtService jwtService = mock(JwtService.class);
-    private final SessionService sessionService = mock(SessionService.class);
 
     private AuthService authService;
 
@@ -34,8 +33,7 @@ class AuthServiceTests {
         authService = new AuthService(
                 userRepository,
                 passwordEncoder,
-                jwtService,
-                sessionService
+                jwtService
         );
     }
 
@@ -47,7 +45,6 @@ class AuthServiceTests {
         AuthResponseDTO token = new AuthResponseDTO(
                 "signed-token",
                 "Bearer",
-                "token-id",
                 Instant.now().plusSeconds(900)
         );
 
@@ -59,11 +56,6 @@ class AuthServiceTests {
 
         assertEquals(token, authService.login(dto));
         verify(jwtService).generateToken(user);
-        verify(sessionService).registerAuthenticationSession(
-                user,
-                token.tokenId(),
-                token.expiresAt()
-        );
     }
 
     @Test
@@ -84,11 +76,6 @@ class AuthServiceTests {
                 null
         );
         verify(jwtService, never()).generateToken(org.mockito.ArgumentMatchers.any());
-        verify(sessionService, never()).registerAuthenticationSession(
-                org.mockito.ArgumentMatchers.any(),
-                org.mockito.ArgumentMatchers.any(),
-                org.mockito.ArgumentMatchers.any()
-        );
     }
 
     @Test
@@ -110,11 +97,6 @@ class AuthServiceTests {
         assertEquals(ErrorCase.UNAUTHORIZED, exception.getErrorCase());
         assertEquals("Credenciales incorrectas", exception.getMessage());
         verify(jwtService, never()).generateToken(org.mockito.ArgumentMatchers.any());
-        verify(sessionService, never()).registerAuthenticationSession(
-                org.mockito.ArgumentMatchers.any(),
-                org.mockito.ArgumentMatchers.any(),
-                org.mockito.ArgumentMatchers.any()
-        );
     }
 
     private static LoginRequestDTO loginRequest() {

@@ -13,7 +13,6 @@ import com.uc.ms_security.mapper.UserMapper;
 import com.uc.ms_security.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -66,15 +65,7 @@ public class UserService {
         return userMapper.toDetailResponseDTO(user);
     }
 
-    public UserSessionsResponseDTO findByIdAndSessions(
-            Long id,
-            Long authenticatedUserId) {
-        if (!id.equals(authenticatedUserId)) {
-            throw new AccessDeniedException(
-                    "No está autorizado para consultar las sesiones de este usuario"
-            );
-        }
-
+    public UserSessionsResponseDTO findByIdAndSessions(Long id) {
         User user = userRepository
                 .findWithSessionsById(id)
                 .orElseThrow(

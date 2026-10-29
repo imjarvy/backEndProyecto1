@@ -12,8 +12,9 @@ public class SessionMapper {
 
     public Session toEntity(SessionRequestDTO dto) {
         Session session = new Session();
-        session.setTokenId(dto.getTokenId());
+        session.setToken(dto.getToken());
         session.setExpiration(dto.getExpiration());
+        session.setCode2FA(dto.getCode2FA());
         return session;
     }
 
@@ -21,14 +22,17 @@ public class SessionMapper {
             SessionRequestDTO dto,
             Session session) {
 
-        session.setTokenId(dto.getTokenId());
+        session.setToken(dto.getToken());
         session.setExpiration(dto.getExpiration());
+        session.setCode2FA(dto.getCode2FA());
     }
 
     public SessionResponseDTO toResponseDTO(Session session) {
         return new SessionResponseDTO(
                 session.getId(),
-                session.getExpiration()
+                session.getToken(),
+                session.getExpiration(),
+                session.getCode2FA()
         );
     }
 
