@@ -27,13 +27,14 @@ public class JwtService {
     public AuthResponseDTO generateToken(User user) {
         Instant now = Instant.now();
         Instant expiresAt = now.plus(TOKEN_DURATION);
+        String tokenId = UUID.randomUUID().toString();
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(JwtConfig.ISSUER)
                 .subject(user.getId().toString())
                 .issuedAt(now)
                 .expiresAt(expiresAt)
-                .id(UUID.randomUUID().toString())
+                .id(tokenId)
                 .claim("email", user.getEmail())
                 .build();
 
@@ -45,6 +46,7 @@ public class JwtService {
         return new AuthResponseDTO(
                 jwt.getTokenValue(),
                 "Bearer",
+                tokenId,
                 expiresAt
         );
     }

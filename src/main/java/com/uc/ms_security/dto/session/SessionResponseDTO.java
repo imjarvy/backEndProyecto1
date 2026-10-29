@@ -9,9 +9,5 @@ public class SessionResponseDTO {
 
     Long id;
 
-    String token;
-
     LocalDateTime expiration;
-
-    String code2FA;
 }

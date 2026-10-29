@@ -20,23 +20,13 @@ public class Session {
     )
     private Long id;
 
-    @Column(
-            nullable = false,
-            unique = true,
-            length = 500
-    )
-    private String token;
+    @Column(name = "token", nullable = false, unique = true, length = 500)
+    private String tokenId;
 
     @Column(
             nullable = false
     )
     private LocalDateTime expiration;
-
-    @Column(
-            name = "code_2fa",
-            length = 10
-    )
-    private String code2FA;
 
     @ManyToOne(
             fetch = FetchType.LAZY,

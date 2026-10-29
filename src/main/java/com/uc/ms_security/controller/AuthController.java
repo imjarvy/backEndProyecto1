@@ -5,8 +5,8 @@ import com.uc.ms_security.dto.auth.CsrfTokenResponseDTO;
 import com.uc.ms_security.dto.auth.CurrentUserResponseDTO;
 import com.uc.ms_security.dto.auth.LoginRequestDTO;
 import com.uc.ms_security.service.AuthService;
+import com.uc.ms_security.service.SessionService;
 import jakarta.validation.Valid;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -26,6 +26,7 @@ import java.time.Instant;
 public class AuthController {
 
     private final AuthService authService;
+    private final SessionService sessionService;
 
     @Value("${security.jwt.cookie-name:AUTH_TOKEN}")
     private String cookieName;
@@ -58,7 +59,12 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout() {
+    public ResponseEntity<Void> logout(
+            @AuthenticationPrincipal Jwt jwt) {
+        if (jwt != null) {
+            sessionService.revokeAuthenticationSession(jwt.getId());
+        }
+
         return ResponseEntity.noContent()
                 .header(
                         HttpHeaders.SET_COOKIE,

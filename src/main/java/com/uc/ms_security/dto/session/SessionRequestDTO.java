@@ -13,10 +13,9 @@ import java.time.LocalDateTime;
 @Setter
 public class SessionRequestDTO {
 
-    @NotBlank(
-            message = "El token es obligatorio"
-    )
-    private String token;
+    @NotBlank(message = "El identificador de sesión es obligatorio")
+    @Size(max = 36, message = "El identificador de sesión es demasiado largo")
+    private String tokenId;
 
     @NotNull(
             message = "La fecha de expiración es obligatoria"
@@ -26,10 +25,4 @@ public class SessionRequestDTO {
     )
     private LocalDateTime expiration;
 
-    @Size(
-            min = 6,
-            max = 10,
-            message = "El código 2FA debe tener entre 6 y 10 caracteres"
-    )
-    private String code2FA;
 }

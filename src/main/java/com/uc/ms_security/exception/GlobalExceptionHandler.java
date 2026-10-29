@@ -2,6 +2,7 @@ package com.uc.ms_security.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -44,6 +45,19 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(exception.getStatusCode())
+                .body(error);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, String>> handleAccessDenied(
+            AccessDeniedException exception) {
+
+        Map<String, String> error = new LinkedHashMap<>();
+        error.put("errorCase", "FORBIDDEN");
+        error.put("message", "No está autorizado para acceder a este recurso");
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
                 .body(error);
     }
 
