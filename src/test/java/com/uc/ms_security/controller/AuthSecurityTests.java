@@ -9,6 +9,7 @@ import com.uc.ms_security.authorization.CookieBearerTokenResolver;
 import com.uc.ms_security.service.AuthService;
 import com.uc.ms_security.service.JwtService;
 import com.uc.ms_security.service.PermissionService;
+import com.uc.ms_security.service.OAuthService;
 import com.uc.ms_security.service.UserService;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
@@ -67,6 +68,9 @@ class AuthSecurityTests {
 
     @MockitoBean
     private AuthService authService;
+
+    @MockitoBean
+    private OAuthService oauthService;
 
     @MockitoBean
     private UserService userService;

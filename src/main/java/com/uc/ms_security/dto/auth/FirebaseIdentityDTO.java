@@ -4,5 +4,5 @@ public record FirebaseIdentityDTO(
         String uid,
         String email,
         String name,
-        String provider) {
+        String provider) implements VerifiedIdentity {
 }

@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 public class OAuthLoginRequestDTO {
 
-    @NotBlank(message = "El token de Firebase es obligatorio")
+    @NotBlank(message = "El token es obligatorio")
     private String idToken;
 }

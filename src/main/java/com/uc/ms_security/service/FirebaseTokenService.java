@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-public class FirebaseTokenService {
+public class FirebaseTokenService implements TokenVerifier {
 
     private static final Set<String> ALLOWED_PROVIDERS = Set.of(
             "google.com",
@@ -36,6 +36,7 @@ public class FirebaseTokenService {
         this.checkRevoked = checkRevoked;
     }
 
+    @Override
     public FirebaseIdentityDTO verify(String idToken) {
         if (!StringUtils.hasText(idToken)) {
             throw invalidToken();
