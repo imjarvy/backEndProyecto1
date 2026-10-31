@@ -61,6 +61,3 @@ public class ProfileController {
         profileService.delete(userId);
     }
 }
-
-
-

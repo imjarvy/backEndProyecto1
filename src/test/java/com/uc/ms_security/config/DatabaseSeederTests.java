@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -89,6 +90,90 @@ class DatabaseSeederTests {
         );
         verify(userRepository, never()).save(admin);
         verify(passwordEncoder, never()).encode(any());
+    }
+
+    @Test
+    void seedsUserRoleAndRolePermissionEndpointsForAdmin() throws Exception {
+        User admin = new User();
+        admin.setId(1L);
+        Role adminRole = role(1L);
+        Role consultantRole = role(2L);
+        Permission permission = new Permission();
+        permission.setId(1L);
+
+        when(userRepository.findByEmail("admin@uc.edu.co"))
+                .thenReturn(Optional.of(admin));
+        when(roleRepository.findByNameIgnoreCase("ADMIN"))
+                .thenReturn(Optional.of(adminRole));
+        when(roleRepository.findByNameIgnoreCase("CONSULTOR"))
+                .thenReturn(Optional.of(consultantRole));
+        when(permissionRepository.findByUrlAndMethodAndEntity(any(), any(), any()))
+                .thenReturn(Optional.of(permission));
+        when(userRoleRepository.existsByUserIdAndRoleId(1L, 1L))
+                .thenReturn(true);
+        when(rolePermissionRepository.existsByRoleIdAndPermissionId(any(), any()))
+                .thenReturn(true);
+
+        DatabaseSeeder seeder = createSeeder("", false);
+        seeder.seedDatabase().run();
+
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/roles/{id}/detail-with-permissions",
+                "GET",
+                "Role"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/user-roles",
+                "POST",
+                "UserRole"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/user-roles",
+                "GET",
+                "UserRole"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/user-roles/users/{id}",
+                "GET",
+                "UserRole"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/user-roles/roles/{id}",
+                "GET",
+                "UserRole"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/user-roles/{id}/{id}",
+                "DELETE",
+                "UserRole"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/role-permissions",
+                "POST",
+                "RolePermission"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/role-permissions",
+                "GET",
+                "RolePermission"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/role-permissions/roles/{id}",
+                "GET",
+                "RolePermission"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/role-permissions/permissions/{id}",
+                "GET",
+                "RolePermission"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/role-permissions/{id}/{id}",
+                "DELETE",
+                "RolePermission"
+        );
+        verify(rolePermissionRepository, times(31))
+                .existsByRoleIdAndPermissionId(1L, 1L);
     }
 
     private DatabaseSeeder createSeeder(String adminPassword, boolean reset) {

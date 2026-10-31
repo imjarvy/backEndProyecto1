@@ -12,6 +12,7 @@ import com.uc.ms_security.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -122,6 +123,7 @@ public class SessionService {
         sessionRepository.save(session);
     }
 
+    @Transactional
     public void revokeAuthenticationSession(String tokenId) {
         if (tokenId != null && !tokenId.isBlank()) {
             sessionRepository.deleteByTokenId(tokenId);
