@@ -1,4 +1,5 @@
 HELP.md
+guia_session_jwt_cookies.md
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -14,6 +15,8 @@ target/
 .sts4-cache
 application.properties
 guia_session_jwt_cookies.md
+
+firebase-credentials.json
 
 ### IntelliJ IDEA ###
 .idea
