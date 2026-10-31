@@ -18,6 +18,9 @@ Configura estas variables antes de iniciar la aplicación:
 La conexión a MySQL se configura mediante `spring.datasource.*` en
 `src/main/resources/application.properties`. CORS permite actualmente
 `http://localhost:4200` y credenciales.
+Al iniciar, la aplicación migra automáticamente la columna antigua
+`permissions.model` a `permissions.entity` y elimina el índice único antiguo
+de `permissions(url, method)` si detecta ese esquema.
 
 ## Flujo de autenticación normal
 

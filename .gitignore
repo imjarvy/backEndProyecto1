@@ -1,4 +1,5 @@
 HELP.md
+guia_session_jwt_cookies.md
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -12,6 +13,9 @@ target/
 .settings
 .springBeans
 .sts4-cache
+application.properties
+
+firebase-credentials.json
 
 ### IntelliJ IDEA ###
 .idea
@@ -28,6 +32,7 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
+
 
 ### VS Code ###
 .vscode/
