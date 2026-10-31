@@ -43,9 +43,7 @@ public class AuthController {
     }
 
     @PostMapping("/oauth")
-    public ResponseEntity<Void> oauth(
-            @Valid @RequestBody OAuthLoginRequestDTO dto) {
-
+    public ResponseEntity<Void> oauth(@Valid @RequestBody OAuthLoginRequestDTO dto) {
         return authenticated(oauthService.login(dto));
     }
 
