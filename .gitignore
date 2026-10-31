@@ -12,6 +12,8 @@ target/
 .settings
 .springBeans
 .sts4-cache
+application.properties
+guia_session_jwt_cookies.md
 
 ### IntelliJ IDEA ###
 .idea
@@ -28,6 +30,7 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
+
 
 ### VS Code ###
 .vscode/
