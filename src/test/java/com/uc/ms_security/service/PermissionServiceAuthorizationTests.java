@@ -69,6 +69,31 @@ class PermissionServiceAuthorizationTests {
     }
 
     @Test
+    void hasPermissionNormalizesIdsForUserRoleAndRolePermissionEndpoints() {
+        when(permissionRepository.findByUserIdAndMethodAndUrl(
+                15L,
+                "GET",
+                "/api/user-roles/users/{id}"
+        )).thenReturn(List.of(new Permission()));
+        when(permissionRepository.findByUserIdAndMethodAndUrl(
+                15L,
+                "GET",
+                "/api/role-permissions/roles/{id}"
+        )).thenReturn(List.of(new Permission()));
+
+        assertTrue(permissionService.hasPermission(
+                15L,
+                "GET",
+                "/api/user-roles/users/27"
+        ));
+        assertTrue(permissionService.hasPermission(
+                15L,
+                "GET",
+                "/api/role-permissions/roles/3"
+        ));
+    }
+
+    @Test
     void hasPermissionDoesNotNormalizeUuid() {
         when(permissionRepository.findByUserIdAndMethodAndUrl(
                 15L,
