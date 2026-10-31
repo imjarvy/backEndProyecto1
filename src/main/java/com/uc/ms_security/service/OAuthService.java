@@ -17,6 +17,7 @@ public class OAuthService {
     private final FirebaseTokenService firebaseTokenService;
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final SessionService sessionService;
 
     public AuthResponseDTO login(OAuthLoginRequestDTO dto) {
         FirebaseIdentityDTO identity =
@@ -25,7 +26,13 @@ public class OAuthService {
         User user = userRepository.findByEmail(identity.email())
                 .orElseThrow(this::unauthorized);
 
-        return jwtService.generateToken(user);
+        AuthResponseDTO token = jwtService.generateToken(user);
+        sessionService.registerAuthenticationSession(
+                user,
+                token.tokenId(),
+                token.expiresAt()
+        );
+        return token;
     }
 
     private ApplicationException unauthorized() {

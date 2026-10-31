@@ -27,6 +27,7 @@ class OAuthServiceTests {
             mock(FirebaseTokenService.class);
     private final UserRepository userRepository = mock(UserRepository.class);
     private final JwtService jwtService = mock(JwtService.class);
+    private final SessionService sessionService = mock(SessionService.class);
 
     private OAuthService oauthService;
 
@@ -35,7 +36,8 @@ class OAuthServiceTests {
         oauthService = new OAuthService(
                 firebaseTokenService,
                 userRepository,
-                jwtService
+                jwtService,
+                sessionService
         );
     }
 
@@ -66,6 +68,11 @@ class OAuthServiceTests {
 
         assertEquals(token, oauthService.login(dto));
         verify(jwtService).generateToken(user);
+        verify(sessionService).registerAuthenticationSession(
+                user,
+                token.tokenId(),
+                token.expiresAt()
+        );
     }
 
     @Test
@@ -91,6 +98,11 @@ class OAuthServiceTests {
         assertEquals(ErrorCase.UNAUTHORIZED, exception.getErrorCase());
         assertEquals("Credenciales incorrectas", exception.getMessage());
         verify(jwtService, never()).generateToken(any());
+        verify(sessionService, never()).registerAuthenticationSession(
+                any(),
+                any(),
+                any()
+        );
     }
 
     @Test
@@ -111,6 +123,11 @@ class OAuthServiceTests {
         assertEquals(ErrorCase.UNAUTHORIZED, exception.getErrorCase());
         verify(userRepository, never()).findByEmail(any());
         verify(jwtService, never()).generateToken(any());
+        verify(sessionService, never()).registerAuthenticationSession(
+                any(),
+                any(),
+                any()
+        );
     }
 
     private static OAuthLoginRequestDTO oauthRequest() {
