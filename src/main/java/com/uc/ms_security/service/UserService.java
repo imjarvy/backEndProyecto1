@@ -4,6 +4,7 @@ import com.uc.ms_security.dto.user.CreateUserDTO;
 import com.uc.ms_security.dto.user.UpdateUserDTO;
 import com.uc.ms_security.dto.user.UserDetailResponseDTO;
 import com.uc.ms_security.dto.user.UserResponseDTO;
+import com.uc.ms_security.dto.user.UserRoleNamesResponseDTO;
 import com.uc.ms_security.dto.user.UserRolesResponseDTO;
 import com.uc.ms_security.dto.user.UserSessionsResponseDTO;
 import com.uc.ms_security.entity.User;
@@ -98,6 +99,23 @@ public class UserService {
                 );
 
         return userMapper.toRolesResponseDTO(user);
+    }
+
+    public UserRoleNamesResponseDTO findRoleNamesByUserId(Long id) {
+        User user = userRepository
+                .findWithRolesById(id)
+                .orElseThrow(
+                        () -> new ApplicationException(
+                                ErrorCase.NOT_FOUND,
+                                "Usuario no encontrado con id: " + id
+                        )
+                );
+
+        List<String> roles = user.getUserRoles().stream()
+                .map(userRole -> userRole.getRole().getName())
+                .toList();
+
+        return new UserRoleNamesResponseDTO(roles);
     }
 
     public UserResponseDTO findById(Long id) {
