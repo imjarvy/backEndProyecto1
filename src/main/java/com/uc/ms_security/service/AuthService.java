@@ -2,6 +2,7 @@ package com.uc.ms_security.service;
 
 import com.uc.ms_security.dto.auth.AuthResponseDTO;
 import com.uc.ms_security.dto.auth.LoginRequestDTO;
+import com.uc.ms_security.dto.user.CreateUserDTO;
 import com.uc.ms_security.entity.User;
 import com.uc.ms_security.exception.ApplicationException;
 import com.uc.ms_security.exception.ErrorCase;
@@ -18,6 +19,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final SessionService sessionService;
+    private final RegistrationService registrationService;
 
     public AuthResponseDTO login(LoginRequestDTO dto) {
         User user = userRepository.findByEmail(dto.getEmail())
@@ -30,6 +32,18 @@ public class AuthService {
         AuthResponseDTO token = jwtService.generateToken(user);
         sessionService.registerAuthenticationSession(
                 user,
+                token.tokenId(),
+                token.expiresAt()
+        );
+        return token;
+    }
+
+    public AuthResponseDTO register(CreateUserDTO dto) {
+        User savedUser = registrationService.register(dto);
+
+        AuthResponseDTO token = jwtService.generateToken(savedUser);
+        sessionService.registerAuthenticationSession(
+                savedUser,
                 token.tokenId(),
                 token.expiresAt()
         );

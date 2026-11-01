@@ -5,6 +5,7 @@ import com.uc.ms_security.dto.auth.CsrfTokenResponseDTO;
 import com.uc.ms_security.dto.auth.CurrentUserResponseDTO;
 import com.uc.ms_security.dto.auth.LoginRequestDTO;
 import com.uc.ms_security.dto.auth.OAuthLoginRequestDTO;
+import com.uc.ms_security.dto.user.CreateUserDTO;
 import com.uc.ms_security.service.AuthService;
 import com.uc.ms_security.service.SessionService;
 import com.uc.ms_security.service.OAuthService;
@@ -40,6 +41,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody LoginRequestDTO dto) {
         return authenticated(authService.login(dto));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<Void> register(
+            @Valid @RequestBody CreateUserDTO dto) {
+        return authenticated(authService.register(dto));
     }
 
     @PostMapping("/oauth")

@@ -121,6 +121,21 @@ La entidad `User` tiene una relación uno-a-muchos con `Session`. La ruta de
 detalle con sesiones compara el identificador de ruta con el usuario autenticado;
 no permite consultar las sesiones de otra identidad.
 
+## Registro público
+
+El registro se realiza mediante `POST /api/auth/register`. Este endpoint recibe
+`name`, `email` y `password`, crea el usuario con la contraseña protegida por
+BCrypt, le asigna el rol `CONSULTOR` y responde `204 No Content` estableciendo
+la cookie `AUTH_TOKEN`. Por ello, el usuario queda autenticado inmediatamente y
+puede consultar `GET /api/auth/session` o consumir los endpoints permitidos por
+su rol.
+
+Al igual que las demás operaciones `POST`, el frontend debe solicitar primero
+`GET /api/auth/csrf` y enviar el token CSRF en `X-XSRF-TOKEN`. El registro
+requiere que el rol `CONSULTOR` exista, condición garantizada por el seeder de
+la aplicación. Los endpoints administrativos bajo `/api/users` continúan
+protegidos.
+
 ## Sesiones
 
 El registro `Session` representa la vigencia de un JWT de autenticación: guarda
