@@ -104,7 +104,8 @@ revocar en ese caso.
 ## Usuarios
 
 Las operaciones de usuarios están bajo `/api/users` y sujetas al sistema de
-permisos dinámicos configurado en Spring Security:
+permisos dinámicos configurado en Spring Security, excepto la consulta de roles
+del usuario autenticado, que requiere autenticación pero no un permiso dinámico:
 
 | Método | Ruta | Resultado |
 |---|---|---|
@@ -113,6 +114,7 @@ permisos dinámicos configurado en Spring Security:
 | `GET` | `/api/users/{id}` | Consulta un usuario. |
 | `PUT` | `/api/users/{id}` | Actualiza datos básicos y, si se envía, contraseña. |
 | `DELETE` | `/api/users/{id}` | Elimina el usuario. |
+| `GET` | `/api/users/me/roles` | Devuelve los nombres de roles del usuario autenticado como `{"roles":["ADMIN"]}`. |
 | `GET` | `/api/users/{id}/detail` | Consulta usuario y perfil. |
 | `GET` | `/api/users/{id}/detail-with-sessions` | Consulta usuario y metadatos de sesiones propias. |
 | `GET` | `/api/users/{id}/detail-with-roles` | Consulta usuario y roles. |

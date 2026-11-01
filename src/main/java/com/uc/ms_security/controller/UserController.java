@@ -4,6 +4,7 @@ import com.uc.ms_security.dto.user.CreateUserDTO;
 import com.uc.ms_security.dto.user.UpdateUserDTO;
 import com.uc.ms_security.dto.user.UserDetailResponseDTO;
 import com.uc.ms_security.dto.user.UserResponseDTO;
+import com.uc.ms_security.dto.user.UserRoleNamesResponseDTO;
 import com.uc.ms_security.dto.user.UserRolesResponseDTO;
 import com.uc.ms_security.dto.user.UserSessionsResponseDTO;
 import com.uc.ms_security.service.UserService;
@@ -32,6 +33,15 @@ public class UserController {
     @GetMapping
     public List<UserResponseDTO> findAll() {
         return userService.findAll();
+    }
+
+    @GetMapping("/me/roles")
+    public UserRoleNamesResponseDTO findAuthenticatedUserRoles(
+            @AuthenticationPrincipal Jwt jwt) {
+
+        return userService.findRoleNamesByUserId(
+                Long.valueOf(jwt.getSubject())
+        );
     }
 
     @GetMapping("/{id}")
