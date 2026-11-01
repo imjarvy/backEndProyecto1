@@ -137,6 +137,26 @@ public class DatabaseSeeder {
                             new PermissionSeed("GET", "/api/users/{id}", "User")
                     )
             );
+            assignPermission(
+                    consultantRole,
+                    findOrCreatePermission(
+                            new PermissionSeed(
+                                    "GET",
+                                    "/api/users/{id}/profile",
+                                    "Profile"
+                            )
+                    )
+            );
+            assignPermission(
+                    consultantRole,
+                    findOrCreatePermission(
+                            new PermissionSeed(
+                                    "POST",
+                                    "/api/users/{id}/profile",
+                                    "Profile"
+                            )
+                    )
+            );
         };
     }
 
