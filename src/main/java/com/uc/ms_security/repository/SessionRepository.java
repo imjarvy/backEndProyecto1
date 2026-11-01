@@ -28,5 +28,12 @@ public interface SessionRepository
             Long userId,
             java.time.LocalDateTime expiration);
 
+    boolean existsByTokenIdAndUserIdAndExpirationAfterAndActiveTrue(
+            String tokenId,
+            Long userId,
+            java.time.LocalDateTime expiration);
+
+    Optional<Session> findByTwoFactorChallengeId(String challengeId);
+
     long deleteByTokenId(String tokenId);
 }

@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +45,7 @@ public class SessionService {
 
         Session session = sessionMapper.toEntity(dto);
         session.setUser(user);
+        session.setActive(true);
 
         Session savedSession = sessionRepository.save(session);
 
@@ -93,6 +95,7 @@ public class SessionService {
         }
 
         sessionMapper.updateEntity(dto, session);
+        session.setActive(true);
 
         Session updatedSession = sessionRepository.save(session);
 
@@ -119,7 +122,49 @@ public class SessionService {
         session.setExpiration(
                 LocalDateTime.ofInstant(expiresAt, ZoneOffset.UTC)
         );
+        session.setActive(true);
+        session.setTwoFactorCode(null);
+        session.setTwoFactorExpiresAt(null);
+        session.setTwoFactorChallengeId(null);
         session.setUser(user);
+        sessionRepository.save(session);
+    }
+
+    public Session createPendingAuthenticationSession(
+            User user,
+            String challengeId,
+            String codeHash,
+            LocalDateTime codeExpiresAt) {
+        Session session = new Session();
+        session.setExpiration(codeExpiresAt);
+        session.setActive(false);
+        session.setTwoFactorCode(codeHash);
+        session.setTwoFactorExpiresAt(codeExpiresAt);
+        session.setTwoFactorChallengeId(challengeId);
+        session.setUser(user);
+        return sessionRepository.save(session);
+    }
+
+    public Optional<Session> findByTwoFactorChallengeId(String challengeId) {
+        return sessionRepository.findByTwoFactorChallengeId(challengeId);
+    }
+
+    public void consumeTwoFactorCode(Session session) {
+        session.setTwoFactorCode(null);
+        session.setTwoFactorExpiresAt(null);
+        session.setTwoFactorChallengeId(null);
+        sessionRepository.save(session);
+    }
+
+    public void activateAuthenticationSession(
+            Session session,
+            String tokenId,
+            java.time.Instant expiresAt) {
+        session.setTokenId(tokenId);
+        session.setExpiration(
+                LocalDateTime.ofInstant(expiresAt, ZoneOffset.UTC)
+        );
+        session.setActive(true);
         sessionRepository.save(session);
     }
 

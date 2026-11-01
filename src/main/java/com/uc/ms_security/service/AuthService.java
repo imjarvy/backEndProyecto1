@@ -2,8 +2,11 @@ package com.uc.ms_security.service;
 
 import com.uc.ms_security.dto.auth.AuthResponseDTO;
 import com.uc.ms_security.dto.auth.LoginRequestDTO;
+import com.uc.ms_security.dto.auth.TwoFactorChallengeResponse;
+import com.uc.ms_security.dto.auth.TwoFactorVerificationDTO;
 import com.uc.ms_security.dto.user.CreateUserDTO;
 import com.uc.ms_security.entity.User;
+import com.uc.ms_security.entity.Session;
 import com.uc.ms_security.exception.ApplicationException;
 import com.uc.ms_security.exception.ErrorCase;
 import com.uc.ms_security.repository.UserRepository;
@@ -20,8 +23,9 @@ public class AuthService {
     private final JwtService jwtService;
     private final SessionService sessionService;
     private final RegistrationService registrationService;
+    private final TwoFactorService twoFactorService;
 
-    public AuthResponseDTO login(LoginRequestDTO dto) {
+    public TwoFactorChallengeResponse login(LoginRequestDTO dto) {
         User user = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(this::unauthorized);
 
@@ -29,21 +33,20 @@ public class AuthService {
             throw unauthorized();
         }
 
-        AuthResponseDTO token = jwtService.generateToken(user);
-        sessionService.registerAuthenticationSession(
-                user,
-                token.tokenId(),
-                token.expiresAt()
-        );
-        return token;
+        return twoFactorService.createChallenge(user).response();
     }
 
-    public AuthResponseDTO register(CreateUserDTO dto) {
+    public TwoFactorChallengeResponse register(CreateUserDTO dto) {
         User savedUser = registrationService.register(dto);
+        return twoFactorService.createChallenge(savedUser).response();
+    }
 
-        AuthResponseDTO token = jwtService.generateToken(savedUser);
-        sessionService.registerAuthenticationSession(
-                savedUser,
+    public AuthResponseDTO verifyTwoFactor(TwoFactorVerificationDTO dto) {
+        Session session = twoFactorService.verifyChallenge(dto);
+        AuthResponseDTO token = jwtService.generateToken(session.getUser());
+
+        sessionService.activateAuthenticationSession(
+                session,
                 token.tokenId(),
                 token.expiresAt()
         );

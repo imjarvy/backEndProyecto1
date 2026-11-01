@@ -5,6 +5,8 @@ import com.uc.ms_security.dto.auth.CsrfTokenResponseDTO;
 import com.uc.ms_security.dto.auth.CurrentUserResponseDTO;
 import com.uc.ms_security.dto.auth.LoginRequestDTO;
 import com.uc.ms_security.dto.auth.OAuthLoginRequestDTO;
+import com.uc.ms_security.dto.auth.TwoFactorChallengeResponse;
+import com.uc.ms_security.dto.auth.TwoFactorVerificationDTO;
 import com.uc.ms_security.dto.user.CreateUserDTO;
 import com.uc.ms_security.service.AuthService;
 import com.uc.ms_security.service.SessionService;
@@ -13,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -39,14 +42,23 @@ public class AuthController {
     private boolean cookieSecure;
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@Valid @RequestBody LoginRequestDTO dto) {
-        return authenticated(authService.login(dto));
+    public ResponseEntity<TwoFactorChallengeResponse> login(
+            @Valid @RequestBody LoginRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(authService.login(dto));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(
+    public ResponseEntity<TwoFactorChallengeResponse> register(
             @Valid @RequestBody CreateUserDTO dto) {
-        return authenticated(authService.register(dto));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(authService.register(dto));
+    }
+
+    @PostMapping("/2fa/verify")
+    public ResponseEntity<Void> verifyTwoFactor(
+            @Valid @RequestBody TwoFactorVerificationDTO dto) {
+        return authenticated(authService.verifyTwoFactor(dto));
     }
 
     @PostMapping("/oauth")

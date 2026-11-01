@@ -98,7 +98,8 @@ public class JwtConfig {
 
             String tokenId = jwt.getId();
             if (tokenId == null || tokenId.isBlank()
-                    || !sessionRepository.existsByTokenIdAndUserIdAndExpirationAfter(
+                    || !sessionRepository
+                    .existsByTokenIdAndUserIdAndExpirationAfterAndActiveTrue(
                             tokenId,
                             userId,
                             LocalDateTime.now(ZoneOffset.UTC))) {

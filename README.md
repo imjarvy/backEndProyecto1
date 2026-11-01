@@ -125,10 +125,9 @@ no permite consultar las sesiones de otra identidad.
 
 El registro se realiza mediante `POST /api/auth/register`. Este endpoint recibe
 `name`, `email` y `password`, crea el usuario con la contraseña protegida por
-BCrypt, le asigna el rol `CONSULTOR` y responde `204 No Content` estableciendo
-la cookie `AUTH_TOKEN`. Por ello, el usuario queda autenticado inmediatamente y
-puede consultar `GET /api/auth/session` o consumir los endpoints permitidos por
-su rol.
+BCrypt, le asigna el rol `CONSULTOR` y crea una sesión pendiente de segundo
+factor. La respuesta es `401` con un `challengeId`; todavía no se establece la
+cookie `AUTH_TOKEN`.
 
 Al igual que las demás operaciones `POST`, el frontend debe solicitar primero
 `GET /api/auth/csrf` y enviar el token CSRF en `X-XSRF-TOKEN`. El registro
@@ -136,12 +135,39 @@ requiere que el rol `CONSULTOR` exista, condición garantizada por el seeder de
 la aplicación. Los endpoints administrativos bajo `/api/users` continúan
 protegidos.
 
+## Segundo factor de autenticación
+
+El login básico y el registro básico requieren un código de seis dígitos. El
+código se almacena como hash BCrypt en la sesión y vence después de cinco
+minutos. Para completarlo, el frontend debe enviar el código a
+`POST /api/auth/2fa/verify`:
+
+```json
+{
+  "challengeId": "identificador-del-desafio",
+  "code": "123456"
+}
+```
+
+Solo después de una validación correcta se activa la sesión, se genera el JWT y
+se establece la cookie `AUTH_TOKEN`. Un código incorrecto, expirado o ya
+consumido no puede activar la sesión.
+
+El código se solicita al microservicio de notificaciones mediante
+`POST http://localhost:8000/2fa/request` y se valida mediante
+`POST http://localhost:8000/2fa/verify`. La URL puede cambiarse con la
+propiedad `NOTIFICATION_BASE_URL`. El microservicio externo conserva el hash
+del código y no lo devuelve al backend; por eso `code_2fa` queda reservado para
+una futura estrategia local y el desafío externo se guarda en
+`two_fa_challenge_id`. OAuth no utiliza este flujo: sus sesiones se crean
+activas inmediatamente después de validar el proveedor externo.
+
 ## Sesiones
 
-El registro `Session` representa la vigencia de un JWT de autenticación: guarda
-el `jti` (en la columna existente `token`), la expiración y la referencia al
-usuario. No guarda el JWT bearer completo ni un código 2FA en el modelo actual.
-La respuesta `SessionResponseDTO` solo expone `id` y `expiration`.
+El registro `Session` representa una sesión activa o un desafío pendiente:
+guarda el `jti` (en la columna `token`), la expiración, el estado `active`, el
+hash del código 2FA, su expiración y el identificador del desafío. La respuesta
+`SessionResponseDTO` solo expone `id` y `expiration`.
 
 Las rutas de administración de sesión están bajo
 `/api/users/{userId}/sessions`:
