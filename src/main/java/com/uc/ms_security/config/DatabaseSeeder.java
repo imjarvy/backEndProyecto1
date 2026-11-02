@@ -157,6 +157,16 @@ public class DatabaseSeeder {
                             )
                     )
             );
+            assignPermission(
+                    consultantRole,
+                    findOrCreatePermission(
+                            new PermissionSeed(
+                                    "GET",
+                                    "/api/profile-images/{id}",
+                                    "ProfileImage"
+                            )
+                    )
+            );
         };
     }
 

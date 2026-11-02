@@ -172,6 +172,11 @@ class DatabaseSeederTests {
                 "DELETE",
                 "RolePermission"
         );
+        verify(permissionRepository, times(2)).findByUrlAndMethodAndEntity(
+                "/api/profile-images/{id}",
+                "GET",
+                "ProfileImage"
+        );
         verify(rolePermissionRepository, times(31))
                 .existsByRoleIdAndPermissionId(1L, 1L);
     }
