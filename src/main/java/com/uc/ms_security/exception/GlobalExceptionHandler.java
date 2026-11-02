@@ -2,6 +2,7 @@ package com.uc.ms_security.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -79,6 +80,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(errors);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, String>> handleDataIntegrityViolation(
+            DataIntegrityViolationException exception) {
+
+        Map<String, String> error = new LinkedHashMap<>();
+        error.put("errorCase", "RELATED_RECORDS");
+        error.put("message", "No se puede completar la operación porque existen datos relacionados");
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(error);
     }
 
     @ExceptionHandler(Exception.class)

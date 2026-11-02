@@ -20,7 +20,7 @@ public class Session {
     )
     private Long id;
 
-    @Column(name = "token", unique = true, length = 500)
+    @Column(name = "token", unique = true, length = 500, nullable = true)
     private String tokenId;
 
     @Column(nullable = false)

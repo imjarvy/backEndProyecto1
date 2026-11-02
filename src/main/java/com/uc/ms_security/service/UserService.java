@@ -12,12 +12,14 @@ import com.uc.ms_security.entity.User;
 import com.uc.ms_security.exception.ApplicationException;
 import com.uc.ms_security.exception.ErrorCase;
 import com.uc.ms_security.mapper.UserMapper;
+import com.uc.ms_security.repository.PasswordRecoveryTokenRepository;
 import com.uc.ms_security.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,6 +28,8 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+
+    private final PasswordRecoveryTokenRepository passwordRecoveryTokenRepository;
 
     private final UserMapper userMapper;
 
@@ -140,8 +144,10 @@ public class UserService {
         User updatedUser = userRepository.save(user);
         return userMapper.toResponseDTO(updatedUser);
     }
+    @Transactional
     public void delete(Long id) {
         User user = findUser(id);
+        passwordRecoveryTokenRepository.deleteAllByUserId(id);
         userRepository.delete(user);
     }
 }
