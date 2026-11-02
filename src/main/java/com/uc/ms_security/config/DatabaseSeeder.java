@@ -3,6 +3,7 @@ package com.uc.ms_security.config;
 import com.uc.ms_security.entity.Permission;
 import com.uc.ms_security.entity.Role;
 import com.uc.ms_security.entity.RolePermission;
+import com.uc.ms_security.entity.AuthProvider;
 import com.uc.ms_security.entity.User;
 import com.uc.ms_security.entity.UserRole;
 import com.uc.ms_security.repository.PermissionRepository;
@@ -202,6 +203,7 @@ public class DatabaseSeeder {
             }
 
             user.setPassword(passwordEncoder.encode(adminPassword));
+            user.setAuthProvider(AuthProvider.LOCAL_PASSWORD);
             User savedUser = userRepository.save(user);
             logger.info("Se restableció la contraseña de admin@uc.edu.co");
             return savedUser;
@@ -219,6 +221,7 @@ public class DatabaseSeeder {
         user.setName("Administrador");
         user.setEmail("admin@uc.edu.co");
         user.setPassword(passwordEncoder.encode(adminPassword));
+        user.setAuthProvider(AuthProvider.LOCAL_PASSWORD);
         return userRepository.save(user);
     }
 

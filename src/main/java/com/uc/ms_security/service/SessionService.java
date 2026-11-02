@@ -175,6 +175,11 @@ public class SessionService {
         }
     }
 
+    @Transactional
+    public void revokeActiveSessionsByUserId(Long userId) {
+        sessionRepository.deleteAllByUserIdAndActiveTrue(userId);
+    }
+
     private void requireOwner(Long userId, Long authenticatedUserId) {
         if (!Objects.equals(userId, authenticatedUserId)) {
             throw new AccessDeniedException(

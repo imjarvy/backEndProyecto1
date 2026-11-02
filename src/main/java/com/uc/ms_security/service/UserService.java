@@ -7,6 +7,7 @@ import com.uc.ms_security.dto.user.UserResponseDTO;
 import com.uc.ms_security.dto.user.UserRoleNamesResponseDTO;
 import com.uc.ms_security.dto.user.UserRolesResponseDTO;
 import com.uc.ms_security.dto.user.UserSessionsResponseDTO;
+import com.uc.ms_security.entity.AuthProvider;
 import com.uc.ms_security.entity.User;
 import com.uc.ms_security.exception.ApplicationException;
 import com.uc.ms_security.exception.ErrorCase;
@@ -39,6 +40,7 @@ public class UserService {
         }
         String encodedPassword = passwordEncoder.encode(dto.getPassword());
         User user = userMapper.toEntity(dto, encodedPassword);
+        user.setAuthProvider(AuthProvider.LOCAL_PASSWORD);
         User savedUser = userRepository.save(user);
         return userMapper.toResponseDTO(savedUser);
     }

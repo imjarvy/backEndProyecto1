@@ -2,6 +2,7 @@ package com.uc.ms_security.service;
 
 import com.uc.ms_security.dto.auth.VerifiedIdentity;
 import com.uc.ms_security.dto.user.CreateUserDTO;
+import com.uc.ms_security.entity.AuthProvider;
 import com.uc.ms_security.entity.Role;
 import com.uc.ms_security.entity.User;
 import com.uc.ms_security.entity.UserRole;
@@ -37,7 +38,8 @@ public class RegistrationService {
         return createUser(
                 dto.getName(),
                 dto.getEmail(),
-                dto.getPassword()
+                dto.getPassword(),
+                AuthProvider.LOCAL_PASSWORD
         );
     }
 
@@ -46,11 +48,16 @@ public class RegistrationService {
         return createUser(
                 resolveName(identity),
                 identity.email(),
-                UUID.randomUUID().toString()
+                UUID.randomUUID().toString(),
+                AuthProvider.fromFirebaseProvider(identity.provider())
         );
     }
 
-    private User createUser(String name, String email, String rawPassword) {
+    private User createUser(
+            String name,
+            String email,
+            String rawPassword,
+            AuthProvider authProvider) {
         if (userRepository.existsByEmail(email)) {
             throw new ApplicationException(
                     ErrorCase.ALREADY_EXISTS,
@@ -74,6 +81,7 @@ public class RegistrationService {
                 dto,
                 passwordEncoder.encode(rawPassword)
         );
+        user.setAuthProvider(authProvider);
         User savedUser = userRepository.save(user);
 
         UserRole userRole = new UserRole();

@@ -4,4 +4,5 @@ public interface VerifiedIdentity {
 
     String email();
     String name();
+    String provider();
 }

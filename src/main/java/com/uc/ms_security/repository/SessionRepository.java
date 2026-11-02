@@ -36,4 +36,6 @@ public interface SessionRepository
     Optional<Session> findByTwoFactorChallengeId(String challengeId);
 
     long deleteByTokenId(String tokenId);
+
+    long deleteAllByUserIdAndActiveTrue(Long userId);
 }

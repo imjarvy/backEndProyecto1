@@ -20,6 +20,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.client.RestClient;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -31,6 +32,9 @@ public class SecurityConfig {
 
     @Value("${security.jwt.cookie-secure:false}")
     private boolean cookieSecure;
+
+    @Value("${security.cors.allowed-origins:http://localhost:4200,http://127.0.0.1:4200}")
+    private String allowedOrigins;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -50,7 +54,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        configuration.setAllowedOrigins(Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .filter(origin -> !origin.isEmpty())
+                .toList());
         configuration.setAllowedMethods(
                 List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
         );
@@ -87,7 +94,9 @@ public class SecurityConfig {
                                 "/api/auth/2fa/verify",
                                 "/api/auth/oauth",
                                 "/api/auth/csrf",
-                                "/api/auth/logout"
+                                "/api/auth/logout",
+                                "/api/auth/password-recovery/request",
+                                "/api/auth/password-recovery/reset"
                         ).permitAll()
                         .requestMatchers("/api/auth/session").authenticated()
                         .requestMatchers(

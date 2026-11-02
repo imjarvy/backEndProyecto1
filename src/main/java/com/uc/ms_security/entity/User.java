@@ -40,6 +40,15 @@ public class User {
     )
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    @Column(
+            name = "auth_provider",
+            nullable = false,
+            length = 32,
+            columnDefinition = "varchar(32)"
+    )
+    private AuthProvider authProvider = AuthProvider.UNKNOWN;
+
     @OneToOne(
             mappedBy = "user",
             cascade = CascadeType.ALL,
