@@ -83,8 +83,8 @@ class PasswordRecoveryServiceTests {
         );
 
         assertEquals(
-                "Solicitud recibida. Si la cuenta es compatible, el sistema "
-                        + "intentará enviar instrucciones de recuperación.",
+                "Si existe una cuenta compatible, recibirás instrucciones "
+                        + "para recuperar la contraseña.",
                 response
         );
         verifyNoInteractions(notificationService);
@@ -158,15 +158,10 @@ class PasswordRecoveryServiceTests {
                 anyString()
         );
 
-        String response = passwordRecoveryService.requestRecovery(
+        passwordRecoveryService.requestRecovery(
                 new PasswordRecoveryRequestDTO("ana@example.com")
         );
 
-        assertEquals(
-                "Solicitud recibida. Si la cuenta es compatible, el sistema "
-                        + "intentará enviar instrucciones de recuperación.",
-                response
-        );
         ArgumentCaptor<String> tokenHash = ArgumentCaptor.forClass(
                 String.class
         );

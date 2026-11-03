@@ -36,8 +36,8 @@ public class PasswordRecoveryService {
     private static final Logger logger =
             LoggerFactory.getLogger(PasswordRecoveryService.class);
     private static final String REQUEST_MESSAGE =
-            "Solicitud recibida. Si la cuenta es compatible, el sistema "
-                    + "intentará enviar instrucciones de recuperación.";
+            "Si existe una cuenta compatible, recibirás instrucciones para "
+                    + "recuperar la contraseña.";
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final PasswordRecoveryTokenService tokenService;

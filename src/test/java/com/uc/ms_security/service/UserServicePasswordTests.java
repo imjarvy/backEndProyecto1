@@ -5,6 +5,7 @@ import com.uc.ms_security.dto.user.UpdateUserDTO;
 import com.uc.ms_security.dto.user.UserResponseDTO;
 import com.uc.ms_security.entity.User;
 import com.uc.ms_security.mapper.UserMapper;
+import com.uc.ms_security.repository.PasswordRecoveryTokenRepository;
 import com.uc.ms_security.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,7 @@ class UserServicePasswordTests {
     void setUp() {
         userService = new UserService(
                 userRepository,
+                mock(PasswordRecoveryTokenRepository.class),
                 userMapper,
                 passwordEncoder
         );
