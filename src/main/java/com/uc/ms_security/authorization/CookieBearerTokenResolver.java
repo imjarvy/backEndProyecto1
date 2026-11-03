@@ -6,8 +6,21 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
+
 @Component
 public class CookieBearerTokenResolver implements BearerTokenResolver {
+
+    private static final Set<String> PUBLIC_AUTH_PATHS = Set.of(
+            "/api/auth/login",
+            "/api/auth/register",
+            "/api/auth/2fa/verify",
+            "/api/auth/oauth",
+            "/api/auth/csrf",
+            "/api/auth/logout",
+            "/api/auth/password-recovery/request",
+            "/api/auth/password-recovery/reset"
+    );
 
     private final String cookieName;
 
@@ -18,6 +31,10 @@ public class CookieBearerTokenResolver implements BearerTokenResolver {
 
     @Override
     public String resolve(HttpServletRequest request) {
+        if (PUBLIC_AUTH_PATHS.contains(request.getRequestURI())) {
+            return null;
+        }
+
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
             return null;
@@ -33,4 +50,4 @@ public class CookieBearerTokenResolver implements BearerTokenResolver {
 
         return null;
     }
-}
+ }
