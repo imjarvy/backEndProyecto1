@@ -5,6 +5,7 @@ uploads/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+/guias/sustentacion_modulo_seguridad.md
 
 ### STS ###
 .apt_generated

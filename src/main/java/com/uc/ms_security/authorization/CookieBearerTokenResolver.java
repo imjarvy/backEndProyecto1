@@ -56,4 +56,4 @@ public class CookieBearerTokenResolver implements BearerTokenResolver {
 
         return null;
     }
-}
+ }

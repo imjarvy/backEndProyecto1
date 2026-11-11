@@ -8,6 +8,7 @@ import com.uc.ms_security.mapper.UserMapper;
 import com.uc.ms_security.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import com.uc.ms_security.repository.PasswordRecoveryTokenRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,10 +22,11 @@ class UserServiceRoleNamesTests {
 
     private final UserRepository userRepository = mock(UserRepository.class);
     private final UserService userService = new UserService(
-            userRepository,
-            mock(UserMapper.class),
-            mock(PasswordEncoder.class)
-    );
+        userRepository,
+        mock(PasswordRecoveryTokenRepository.class),
+        mock(UserMapper.class),
+        mock(PasswordEncoder.class)
+);
 
     @Test
     void returnsOnlyPersistedRoleNamesForRequestedAuthenticatedUser() {
