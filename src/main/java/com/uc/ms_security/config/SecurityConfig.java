@@ -79,6 +79,9 @@ public class SecurityConfig {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf
+                        .ignoringRequestMatchers(
+                                "/api/internal/security/permissions-validation"
+                        )
                         .csrfTokenRepository(csrfTokenRepository())
                         .csrfTokenRequestHandler(
                                 new CsrfTokenRequestAttributeHandler()
@@ -102,6 +105,10 @@ public class SecurityConfig {
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/users/me/roles"
+                        ).authenticated()
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/internal/security/permissions-validation"
                         ).authenticated()
                         .anyRequest().access(dynamicAuthorizationManager)
                 )
