@@ -1,4 +1,4 @@
-package com.uc.ms_security.dto;
+package com.uc.ms_security.dto.permission;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

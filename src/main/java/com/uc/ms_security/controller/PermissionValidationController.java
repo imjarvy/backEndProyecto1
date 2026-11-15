@@ -1,7 +1,7 @@
 package com.uc.ms_security.controller;
 
-import com.uc.ms_security.dto.PermissionValidationRequestDTO;
-import com.uc.ms_security.dto.PermissionValidationResponseDTO;
+import com.uc.ms_security.dto.permission.PermissionValidationRequestDTO;
+import com.uc.ms_security.dto.permission.PermissionValidationResponseDTO;
 import com.uc.ms_security.service.PermissionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

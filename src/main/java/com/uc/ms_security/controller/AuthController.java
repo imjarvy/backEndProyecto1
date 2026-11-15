@@ -91,6 +91,10 @@ public class AuthController {
                         HttpHeaders.SET_COOKIE,
                         authCookie("", Duration.ZERO).toString()
                 )
+                .header(
+                        HttpHeaders.SET_COOKIE,
+                        authCookie("", Duration.ZERO, "/api").toString()
+                )
                 .build();
     }
 
@@ -100,14 +104,25 @@ public class AuthController {
 
         return ResponseEntity.noContent()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .header(
+                        HttpHeaders.SET_COOKIE,
+                        authCookie("", Duration.ZERO, "/api").toString()
+                )
                 .build();
     }
 
     private ResponseCookie authCookie(String value, Duration maxAge) {
+        return authCookie(value, maxAge, "/");
+    }
+
+    private ResponseCookie authCookie(
+            String value,
+            Duration maxAge,
+            String path) {
         return ResponseCookie.from(cookieName, value)
                 .httpOnly(true)
                 .secure(cookieSecure)
-                .path("/api")
+                .path(path)
                 .sameSite("Lax")
                 .maxAge(maxAge.isNegative() ? Duration.ZERO : maxAge)
                 .build();
