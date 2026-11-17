@@ -5,7 +5,6 @@ import com.uc.ms_security.dto.auth.PasswordResetRequestDTO;
 import com.uc.ms_security.entity.AuthProvider;
 import com.uc.ms_security.entity.PasswordRecoveryToken;
 import com.uc.ms_security.exception.ApplicationException;
-import com.uc.ms_security.exception.ErrorCase;
 import com.uc.ms_security.repository.PasswordRecoveryTokenRepository;
 import com.uc.ms_security.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

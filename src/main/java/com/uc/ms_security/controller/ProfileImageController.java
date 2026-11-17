@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 @RestController
-@RequestMapping("/api/profile-images")
+@RequestMapping("/profile-images")
 @RequiredArgsConstructor
 public class ProfileImageController {
 
