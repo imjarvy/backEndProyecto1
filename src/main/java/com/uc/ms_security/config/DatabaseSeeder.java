@@ -77,7 +77,35 @@ public class DatabaseSeeder {
                     "DELETE",
                     "/api/role-permissions/{id}/{id}",
                     "RolePermission"
-            )
+            ),
+            new PermissionSeed("POST", "/api/phases", "Phase"),
+            new PermissionSeed("GET", "/api/phases", "Phase"),
+            new PermissionSeed("GET", "/api/phases/{id}", "Phase"),
+            new PermissionSeed("PATCH", "/api/phases/{id}", "Phase"),
+            new PermissionSeed("DELETE", "/api/phases/{id}", "Phase"),
+            new PermissionSeed("GET", "/matches", "Match"),
+            new PermissionSeed("GET", "/matches/{id}", "Match"),
+            new PermissionSeed("POST", "/matches", "Match"),
+            new PermissionSeed("PATCH", "/matches/{id}", "Match"),
+            new PermissionSeed("POST", "/team-sports", "TeamSport"),
+            new PermissionSeed("GET", "/team-sports", "TeamSport"),
+            new PermissionSeed("GET", "/team-sports/{id}", "TeamSport"),
+            new PermissionSeed("PATCH", "/team-sports/{id}", "TeamSport"),
+            new PermissionSeed("DELETE", "/team-sports/{id}", "TeamSport"),
+            new PermissionSeed("POST", "/api/registrations", "Registration"),
+            new PermissionSeed("GET", "/api/registrations", "Registration"),
+            new PermissionSeed("DELETE", "/api/registrations/{id}", "Registration"),
+            new PermissionSeed("POST", "/api/tournaments", "Tournament"),
+            new PermissionSeed("GET", "/api/tournaments", "Tournament"),
+            new PermissionSeed("GET", "/api/tournaments/{id}", "Tournament"),
+            new PermissionSeed(
+                    "GET",
+                    "/api/tournaments/{id}/development",
+                    "Tournament"
+            ),
+            new PermissionSeed("PATCH", "/api/tournaments/{id}", "Tournament"),
+            new PermissionSeed("DELETE", "/api/tournaments/{id}", "Tournament"),
+            new PermissionSeed("DELETE", "/matches/{id}", "Match"),
     };
 
     private final UserRepository userRepository;
