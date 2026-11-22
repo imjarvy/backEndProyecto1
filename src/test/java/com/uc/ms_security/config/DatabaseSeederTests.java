@@ -198,52 +198,107 @@ class DatabaseSeederTests {
                 "Phase"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
-                "/matches",
+                "/api/matches",
                 "GET",
                 "Match"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
-                "/matches/{id}",
+                "/api/matches/{id}",
                 "GET",
                 "Match"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
-                "/matches",
+                "/api/matches",
                 "POST",
                 "Match"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
-                "/matches/{id}",
+                "/api/matches/{id}",
                 "PATCH",
                 "Match"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
-                "/matches/{id}",
+                "/api/matches/{id}",
                 "DELETE",
                 "Match"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
-                "/team-sports",
+                "/api/matches/{id}/result",
+                "PATCH",
+                "Match"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/teams",
+                "POST",
+                "Team"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/teams",
+                "GET",
+                "Team"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/teams/{id}",
+                "GET",
+                "Team"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/teams/{id}",
+                "PATCH",
+                "Team"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/teams/{id}",
+                "DELETE",
+                "Team"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/sports",
+                "POST",
+                "Sport"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/sports",
+                "GET",
+                "Sport"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/sports/{id}",
+                "GET",
+                "Sport"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/sports/{id}",
+                "PATCH",
+                "Sport"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/sports/{id}",
+                "DELETE",
+                "Sport"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/team-sports",
                 "POST",
                 "TeamSport"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
-                "/team-sports",
+                "/api/team-sports",
                 "GET",
                 "TeamSport"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
-                "/team-sports/{id}",
+                "/api/team-sports/{id}",
                 "GET",
                 "TeamSport"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
-                "/team-sports/{id}",
+                "/api/team-sports/{id}",
                 "PATCH",
                 "TeamSport"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
-                "/team-sports/{id}",
+                "/api/team-sports/{id}",
                 "DELETE",
                 "TeamSport"
         );
@@ -297,7 +352,7 @@ class DatabaseSeederTests {
                 "GET",
                 "ProfileImage"
         );
-        verify(rolePermissionRepository, times(55))
+        verify(rolePermissionRepository, times(90))
                 .existsByRoleIdAndPermissionId(1L, 1L);
     }
 

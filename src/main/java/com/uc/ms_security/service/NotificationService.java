@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClient;
@@ -17,10 +18,12 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 
 import java.io.IOException;
+import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.time.Duration;
 
 @Service
 @RequiredArgsConstructor
@@ -114,6 +117,11 @@ public class NotificationService {
             }
             return response;
         } catch (RestClientException exception) {
+            logger.error(
+                    "Notification service transport failed for two-factor "
+                            + "code request ({})",
+                    exception.getClass().getSimpleName()
+            );
             throw notificationUnavailable(exception);
         }
     }
@@ -145,7 +153,17 @@ public class NotificationService {
     }
 
     private RestClient client() {
-        return restClientBuilder.baseUrl(baseUrl).build();
+        HttpClient httpClient = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(3))
+                .build();
+        JdkClientHttpRequestFactory requestFactory =
+                new JdkClientHttpRequestFactory(httpClient);
+        requestFactory.setReadTimeout(Duration.ofSeconds(15));
+
+        return restClientBuilder.clone()
+                .baseUrl(baseUrl)
+                .requestFactory(requestFactory)
+                .build();
     }
 
     private ApplicationException notificationUnavailable() {
