@@ -157,6 +157,7 @@ public class DatabaseSeeder {
             ),
             new PermissionSeed("GET", "/api/teams/{id}/players", "TeamPlayer"),
             new PermissionSeed("GET", "/api/players/{id}/teams", "TeamPlayer"),
+            new PermissionSeed("DELETE", "/api/player-teams/{id}", "TeamPlayer"),
             new PermissionSeed(
                     "POST",
                     "/api/matches/{id}/annotations",

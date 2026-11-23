@@ -118,6 +118,11 @@ class DatabaseSeederTests {
         seeder.seedDatabase().run();
 
         verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/player-teams/{id}",
+                "DELETE",
+                "TeamPlayer"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
                 "/api/roles/{id}/detail-with-permissions",
                 "GET",
                 "Role"
@@ -352,7 +357,7 @@ class DatabaseSeederTests {
                 "GET",
                 "ProfileImage"
         );
-        verify(rolePermissionRepository, times(90))
+        verify(rolePermissionRepository, times(91))
                 .existsByRoleIdAndPermissionId(1L, 1L);
     }
 
