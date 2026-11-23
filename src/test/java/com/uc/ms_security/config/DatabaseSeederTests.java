@@ -392,11 +392,7 @@ class DatabaseSeederTests {
                 "GET",
                 "ProfileImage"
         );
-<<<<<<< HEAD
-        verify(rolePermissionRepository, times(63))
-=======
         verify(rolePermissionRepository, times(90))
->>>>>>> fff6d7368db9bdb9d66a0799c75c6d429f58ac61
                 .existsByRoleIdAndPermissionId(1L, 1L);
     }
 
