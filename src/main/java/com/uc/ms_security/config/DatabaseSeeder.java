@@ -83,6 +83,46 @@ public class DatabaseSeeder {
             new PermissionSeed("GET", "/api/phases/{id}", "Phase"),
             new PermissionSeed("PATCH", "/api/phases/{id}", "Phase"),
             new PermissionSeed("DELETE", "/api/phases/{id}", "Phase"),
+            new PermissionSeed(
+                    "POST",
+                    "/api/phases/{id}/groups",
+                    "CompetitionGroup"
+            ),
+            new PermissionSeed(
+                    "GET",
+                    "/api/phases/{id}/groups",
+                    "CompetitionGroup"
+            ),
+            new PermissionSeed(
+                    "GET",
+                    "/api/groups/{id}",
+                    "CompetitionGroup"
+            ),
+            new PermissionSeed(
+                    "PATCH",
+                    "/api/groups/{id}",
+                    "CompetitionGroup"
+            ),
+            new PermissionSeed(
+                    "DELETE",
+                    "/api/groups/{id}",
+                    "CompetitionGroup"
+            ),
+            new PermissionSeed(
+                    "POST",
+                    "/api/groups/{id}/teams",
+                    "CompetitionGroup"
+            ),
+            new PermissionSeed(
+                    "GET",
+                    "/api/groups/{id}/teams",
+                    "CompetitionGroup"
+            ),
+            new PermissionSeed(
+                    "DELETE",
+                    "/api/groups/{id}/teams/{id}",
+                    "CompetitionGroup"
+            ),
             new PermissionSeed("GET", "/matches", "Match"),
             new PermissionSeed("GET", "/matches/{id}", "Match"),
             new PermissionSeed("POST", "/matches", "Match"),
