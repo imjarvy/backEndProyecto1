@@ -26,28 +26,17 @@ public class DatabaseSeeder {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseSeeder.class);
 
-    private static final PermissionSeed GET_USERS_PERMISSION =
-            new PermissionSeed("GET", "/api/users", "User");
-    private static final PermissionSeed GET_USER_PERMISSION =
-            new PermissionSeed("GET", "/api/users/{id}", "User");
-    private static final PermissionSeed GET_PROFILE_PERMISSION =
-            new PermissionSeed("GET", "/api/users/{id}/profile", "Profile");
-    private static final PermissionSeed POST_PROFILE_PERMISSION =
-            new PermissionSeed("POST", "/api/users/{id}/profile", "Profile");
-    private static final PermissionSeed GET_PROFILE_IMAGE_PERMISSION =
-            new PermissionSeed("GET", "/api/profile-images/{id}", "ProfileImage");
-
     private static final PermissionSeed[] ADMIN_PERMISSIONS = {
-            GET_USERS_PERMISSION,
+            new PermissionSeed("GET", "/api/users", "User"),
             new PermissionSeed("POST", "/api/users", "User"),
-            GET_USER_PERMISSION,
+            new PermissionSeed("GET", "/api/users/{id}", "User"),
             new PermissionSeed("PUT", "/api/users/{id}", "User"),
             new PermissionSeed("DELETE", "/api/users/{id}", "User"),
-            GET_PROFILE_PERMISSION,
-            POST_PROFILE_PERMISSION,
+            new PermissionSeed("GET", "/api/users/{id}/profile", "Profile"),
+            new PermissionSeed("POST", "/api/users/{id}/profile", "Profile"),
             new PermissionSeed("PUT", "/api/users/{id}/profile", "Profile"),
             new PermissionSeed("DELETE", "/api/users/{id}/profile", "Profile"),
-            GET_PROFILE_IMAGE_PERMISSION,
+            new PermissionSeed("GET", "/api/profile-images/{id}", "ProfileImage"),
             new PermissionSeed("GET", "/api/roles", "Role"),
             new PermissionSeed("POST", "/api/roles", "Role"),
             new PermissionSeed("GET", "/api/roles/{id}", "Role"),
@@ -134,15 +123,26 @@ public class DatabaseSeeder {
                     "/api/groups/{id}/teams/{id}",
                     "CompetitionGroup"
             ),
-            new PermissionSeed("GET", "/matches", "Match"),
-            new PermissionSeed("GET", "/matches/{id}", "Match"),
-            new PermissionSeed("POST", "/matches", "Match"),
-            new PermissionSeed("PATCH", "/matches/{id}", "Match"),
-            new PermissionSeed("POST", "/team-sports", "TeamSport"),
-            new PermissionSeed("GET", "/team-sports", "TeamSport"),
-            new PermissionSeed("GET", "/team-sports/{id}", "TeamSport"),
-            new PermissionSeed("PATCH", "/team-sports/{id}", "TeamSport"),
-            new PermissionSeed("DELETE", "/team-sports/{id}", "TeamSport"),
+            new PermissionSeed("GET", "/api/matches", "Match"),
+            new PermissionSeed("GET", "/api/matches/{id}", "Match"),
+            new PermissionSeed("POST", "/api/matches", "Match"),
+            new PermissionSeed("PATCH", "/api/matches/{id}", "Match"),
+            new PermissionSeed("PATCH", "/api/matches/{id}/result", "Match"),
+            new PermissionSeed("POST", "/api/teams", "Team"),
+            new PermissionSeed("GET", "/api/teams", "Team"),
+            new PermissionSeed("GET", "/api/teams/{id}", "Team"),
+            new PermissionSeed("PATCH", "/api/teams/{id}", "Team"),
+            new PermissionSeed("DELETE", "/api/teams/{id}", "Team"),
+            new PermissionSeed("POST", "/api/sports", "Sport"),
+            new PermissionSeed("GET", "/api/sports", "Sport"),
+            new PermissionSeed("GET", "/api/sports/{id}", "Sport"),
+            new PermissionSeed("PATCH", "/api/sports/{id}", "Sport"),
+            new PermissionSeed("DELETE", "/api/sports/{id}", "Sport"),
+            new PermissionSeed("POST", "/api/team-sports", "TeamSport"),
+            new PermissionSeed("GET", "/api/team-sports", "TeamSport"),
+            new PermissionSeed("GET", "/api/team-sports/{id}", "TeamSport"),
+            new PermissionSeed("PATCH", "/api/team-sports/{id}", "TeamSport"),
+            new PermissionSeed("DELETE", "/api/team-sports/{id}", "TeamSport"),
             new PermissionSeed("POST", "/api/registrations", "Registration"),
             new PermissionSeed("GET", "/api/registrations", "Registration"),
             new PermissionSeed("DELETE", "/api/registrations/{id}", "Registration"),
@@ -156,7 +156,60 @@ public class DatabaseSeeder {
             ),
             new PermissionSeed("PATCH", "/api/tournaments/{id}", "Tournament"),
             new PermissionSeed("DELETE", "/api/tournaments/{id}", "Tournament"),
-            new PermissionSeed("DELETE", "/matches/{id}", "Match"),
+            new PermissionSeed("DELETE", "/api/matches/{id}", "Match"),
+            new PermissionSeed("POST", "/api/players", "Player"),
+            new PermissionSeed("GET", "/api/players", "Player"),
+            new PermissionSeed("GET", "/api/players/{id}", "Player"),
+            new PermissionSeed("GET", "/api/players/{id}/profile", "Player"),
+            new PermissionSeed("PATCH", "/api/players/{id}", "Player"),
+            new PermissionSeed("DELETE", "/api/players/{id}", "Player"),
+            new PermissionSeed("POST", "/api/skills", "Skill"),
+            new PermissionSeed("GET", "/api/skills", "Skill"),
+            new PermissionSeed("GET", "/api/skills/{id}", "Skill"),
+            new PermissionSeed("PATCH", "/api/skills/{id}", "Skill"),
+            new PermissionSeed("DELETE", "/api/skills/{id}", "Skill"),
+            new PermissionSeed(
+                    "POST",
+                    "/api/players/{id}/skills",
+                    "PlayerSkill"
+            ),
+            new PermissionSeed(
+                    "GET",
+                    "/api/players/{id}/skills",
+                    "PlayerSkill"
+            ),
+            new PermissionSeed(
+                    "PATCH",
+                    "/api/players/{id}/skills/{id}",
+                    "PlayerSkill"
+            ),
+            new PermissionSeed(
+                    "DELETE",
+                    "/api/players/{id}/skills/{id}",
+                    "PlayerSkill"
+            ),
+            new PermissionSeed("GET", "/api/skills/{id}/players", "PlayerSkill"),
+            new PermissionSeed("POST", "/api/teams/{id}/players", "TeamPlayer"),
+            new PermissionSeed(
+                    "PATCH",
+                    "/api/teams/{id}/players/{id}/retirement",
+                    "TeamPlayer"
+            ),
+            new PermissionSeed("GET", "/api/teams/{id}/players", "TeamPlayer"),
+            new PermissionSeed("GET", "/api/players/{id}/teams", "TeamPlayer"),
+            new PermissionSeed("DELETE", "/api/player-teams/{id}", "TeamPlayer"),
+            new PermissionSeed(
+                    "POST",
+                    "/api/matches/{id}/annotations",
+                    "Annotation"
+            ),
+            new PermissionSeed(
+                    "GET",
+                    "/api/matches/{id}/annotations",
+                    "Annotation"
+            ),
+            new PermissionSeed("PATCH", "/api/annotations/{id}", "Annotation"),
+            new PermissionSeed("DELETE", "/api/annotations/{id}", "Annotation"),
     };
 
     private final UserRepository userRepository;
@@ -208,31 +261,127 @@ public class DatabaseSeeder {
             assignPermission(
                     consultantRole,
                     findOrCreatePermission(
-                            GET_USERS_PERMISSION
+                            new PermissionSeed("GET", "/api/users", "User")
                     )
             );
             assignPermission(
                     consultantRole,
                     findOrCreatePermission(
-                            GET_USER_PERMISSION
+                            new PermissionSeed("GET", "/api/users/{id}", "User")
                     )
             );
             assignPermission(
                     consultantRole,
                     findOrCreatePermission(
-                            GET_PROFILE_PERMISSION
+                            new PermissionSeed(
+                                    "GET",
+                                    "/api/users/{id}/profile",
+                                    "Profile"
+                            )
                     )
             );
             assignPermission(
                     consultantRole,
                     findOrCreatePermission(
-                            POST_PROFILE_PERMISSION
+                            new PermissionSeed(
+                                    "POST",
+                                    "/api/users/{id}/profile",
+                                    "Profile"
+                            )
                     )
             );
             assignPermission(
                     consultantRole,
                     findOrCreatePermission(
-                            GET_PROFILE_IMAGE_PERMISSION
+                            new PermissionSeed(
+                                    "GET",
+                                    "/api/profile-images/{id}",
+                                    "ProfileImage"
+                            )
+                    )
+            );
+            assignPermission(
+                    consultantRole,
+                    findOrCreatePermission(
+                            new PermissionSeed("GET", "/api/players", "Player")
+                    )
+            );
+            assignPermission(
+                    consultantRole,
+                    findOrCreatePermission(
+                            new PermissionSeed("GET", "/api/players/{id}", "Player")
+                    )
+            );
+            assignPermission(
+                    consultantRole,
+                    findOrCreatePermission(
+                            new PermissionSeed(
+                                    "GET",
+                                    "/api/players/{id}/profile",
+                                    "Player"
+                            )
+                    )
+            );
+            assignPermission(
+                    consultantRole,
+                    findOrCreatePermission(
+                            new PermissionSeed("GET", "/api/skills", "Skill")
+                    )
+            );
+            assignPermission(
+                    consultantRole,
+                    findOrCreatePermission(
+                            new PermissionSeed("GET", "/api/skills/{id}", "Skill")
+                    )
+            );
+            assignPermission(
+                    consultantRole,
+                    findOrCreatePermission(
+                            new PermissionSeed(
+                                    "GET",
+                                    "/api/players/{id}/skills",
+                                    "PlayerSkill"
+                            )
+                    )
+            );
+            assignPermission(
+                    consultantRole,
+                    findOrCreatePermission(
+                            new PermissionSeed(
+                                    "GET",
+                                    "/api/skills/{id}/players",
+                                    "PlayerSkill"
+                            )
+                    )
+            );
+            assignPermission(
+                    consultantRole,
+                    findOrCreatePermission(
+                            new PermissionSeed(
+                                    "GET",
+                                    "/api/teams/{id}/players",
+                                    "TeamPlayer"
+                            )
+                    )
+            );
+            assignPermission(
+                    consultantRole,
+                    findOrCreatePermission(
+                            new PermissionSeed(
+                                    "GET",
+                                    "/api/players/{id}/teams",
+                                    "TeamPlayer"
+                            )
+                    )
+            );
+            assignPermission(
+                    consultantRole,
+                    findOrCreatePermission(
+                            new PermissionSeed(
+                                    "GET",
+                                    "/api/matches/{id}/annotations",
+                                    "Annotation"
+                            )
                     )
             );
         };
