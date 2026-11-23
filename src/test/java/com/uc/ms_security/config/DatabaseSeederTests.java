@@ -198,7 +198,6 @@ class DatabaseSeederTests {
                 "Phase"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
-<<<<<<< HEAD
                 "/api/phases/{id}/groups",
                 "POST",
                 "CompetitionGroup"
@@ -239,10 +238,7 @@ class DatabaseSeederTests {
                 "CompetitionGroup"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
-                "/matches",
-=======
                 "/api/matches",
->>>>>>> fff6d7368db9bdb9d66a0799c75c6d429f58ac61
                 "GET",
                 "Match"
         );
