@@ -6,6 +6,7 @@ uploads/
 !**/src/main/**/target/
 !**/src/test/**/target/
 /guias/sustentacion_modulo_seguridad.md
+/guias/prompt-backend-permisos
 
 ### STS ###
 .apt_generated

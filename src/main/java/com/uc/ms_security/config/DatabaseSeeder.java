@@ -26,17 +26,28 @@ public class DatabaseSeeder {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseSeeder.class);
 
+    private static final PermissionSeed GET_USERS_PERMISSION =
+            new PermissionSeed("GET", "/api/users", "User");
+    private static final PermissionSeed GET_USER_PERMISSION =
+            new PermissionSeed("GET", "/api/users/{id}", "User");
+    private static final PermissionSeed GET_PROFILE_PERMISSION =
+            new PermissionSeed("GET", "/api/users/{id}/profile", "Profile");
+    private static final PermissionSeed POST_PROFILE_PERMISSION =
+            new PermissionSeed("POST", "/api/users/{id}/profile", "Profile");
+    private static final PermissionSeed GET_PROFILE_IMAGE_PERMISSION =
+            new PermissionSeed("GET", "/api/profile-images/{id}", "ProfileImage");
+
     private static final PermissionSeed[] ADMIN_PERMISSIONS = {
-            new PermissionSeed("GET", "/api/users", "User"),
+            GET_USERS_PERMISSION,
             new PermissionSeed("POST", "/api/users", "User"),
-            new PermissionSeed("GET", "/api/users/{id}", "User"),
+            GET_USER_PERMISSION,
             new PermissionSeed("PUT", "/api/users/{id}", "User"),
             new PermissionSeed("DELETE", "/api/users/{id}", "User"),
-            new PermissionSeed("GET", "/api/users/{id}/profile", "Profile"),
-            new PermissionSeed("POST", "/api/users/{id}/profile", "Profile"),
+            GET_PROFILE_PERMISSION,
+            POST_PROFILE_PERMISSION,
             new PermissionSeed("PUT", "/api/users/{id}/profile", "Profile"),
             new PermissionSeed("DELETE", "/api/users/{id}/profile", "Profile"),
-            new PermissionSeed("GET", "/api/profile-images/{id}", "ProfileImage"),
+            GET_PROFILE_IMAGE_PERMISSION,
             new PermissionSeed("GET", "/api/roles", "Role"),
             new PermissionSeed("POST", "/api/roles", "Role"),
             new PermissionSeed("GET", "/api/roles/{id}", "Role"),
@@ -197,43 +208,31 @@ public class DatabaseSeeder {
             assignPermission(
                     consultantRole,
                     findOrCreatePermission(
-                            new PermissionSeed("GET", "/api/users", "User")
+                            GET_USERS_PERMISSION
                     )
             );
             assignPermission(
                     consultantRole,
                     findOrCreatePermission(
-                            new PermissionSeed("GET", "/api/users/{id}", "User")
+                            GET_USER_PERMISSION
                     )
             );
             assignPermission(
                     consultantRole,
                     findOrCreatePermission(
-                            new PermissionSeed(
-                                    "GET",
-                                    "/api/users/{id}/profile",
-                                    "Profile"
-                            )
+                            GET_PROFILE_PERMISSION
                     )
             );
             assignPermission(
                     consultantRole,
                     findOrCreatePermission(
-                            new PermissionSeed(
-                                    "POST",
-                                    "/api/users/{id}/profile",
-                                    "Profile"
-                            )
+                            POST_PROFILE_PERMISSION
                     )
             );
             assignPermission(
                     consultantRole,
                     findOrCreatePermission(
-                            new PermissionSeed(
-                                    "GET",
-                                    "/api/profile-images/{id}",
-                                    "ProfileImage"
-                            )
+                            GET_PROFILE_IMAGE_PERMISSION
                     )
             );
         };

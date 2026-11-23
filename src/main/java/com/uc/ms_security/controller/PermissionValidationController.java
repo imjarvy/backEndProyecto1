@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/internal/security")
+@RequestMapping("/internal/security")
 @RequiredArgsConstructor
 public class PermissionValidationController {
 

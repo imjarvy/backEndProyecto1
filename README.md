@@ -18,6 +18,10 @@ Configura estas variables antes de iniciar la aplicación:
 La conexión a MySQL se configura mediante `spring.datasource.*` en
 `src/main/resources/application.properties`. CORS permite actualmente
 `http://localhost:4200` y credenciales.
+Todas las rutas de los controladores REST reciben automáticamente el prefijo
+`/api`. Al agregar un controlador o una ruta, no incluyas `/api` en sus
+anotaciones de mapping; por ejemplo, `@RequestMapping("/reports")` se publica
+como `/api/reports`. Las rutas públicas existentes conservan sus URLs actuales.
 Al iniciar, la aplicación migra automáticamente la columna antigua
 `permissions.model` a `permissions.entity` y elimina el índice único antiguo
 de `permissions(url, method)` si detecta ese esquema.

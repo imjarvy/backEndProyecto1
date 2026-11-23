@@ -198,6 +198,7 @@ class DatabaseSeederTests {
                 "Phase"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
+<<<<<<< HEAD
                 "/api/phases/{id}/groups",
                 "POST",
                 "CompetitionGroup"
@@ -239,51 +240,109 @@ class DatabaseSeederTests {
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
                 "/matches",
+=======
+                "/api/matches",
+>>>>>>> fff6d7368db9bdb9d66a0799c75c6d429f58ac61
                 "GET",
                 "Match"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
-                "/matches/{id}",
+                "/api/matches/{id}",
                 "GET",
                 "Match"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
-                "/matches",
+                "/api/matches",
                 "POST",
                 "Match"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
-                "/matches/{id}",
+                "/api/matches/{id}",
                 "PATCH",
                 "Match"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
-                "/matches/{id}",
+                "/api/matches/{id}",
                 "DELETE",
                 "Match"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
-                "/team-sports",
+                "/api/matches/{id}/result",
+                "PATCH",
+                "Match"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/teams",
+                "POST",
+                "Team"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/teams",
+                "GET",
+                "Team"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/teams/{id}",
+                "GET",
+                "Team"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/teams/{id}",
+                "PATCH",
+                "Team"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/teams/{id}",
+                "DELETE",
+                "Team"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/sports",
+                "POST",
+                "Sport"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/sports",
+                "GET",
+                "Sport"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/sports/{id}",
+                "GET",
+                "Sport"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/sports/{id}",
+                "PATCH",
+                "Sport"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/sports/{id}",
+                "DELETE",
+                "Sport"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/team-sports",
                 "POST",
                 "TeamSport"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
-                "/team-sports",
+                "/api/team-sports",
                 "GET",
                 "TeamSport"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
-                "/team-sports/{id}",
+                "/api/team-sports/{id}",
                 "GET",
                 "TeamSport"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
-                "/team-sports/{id}",
+                "/api/team-sports/{id}",
                 "PATCH",
                 "TeamSport"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
-                "/team-sports/{id}",
+                "/api/team-sports/{id}",
                 "DELETE",
                 "TeamSport"
         );
@@ -337,7 +396,11 @@ class DatabaseSeederTests {
                 "GET",
                 "ProfileImage"
         );
+<<<<<<< HEAD
         verify(rolePermissionRepository, times(63))
+=======
+        verify(rolePermissionRepository, times(90))
+>>>>>>> fff6d7368db9bdb9d66a0799c75c6d429f58ac61
                 .existsByRoleIdAndPermissionId(1L, 1L);
     }
 
