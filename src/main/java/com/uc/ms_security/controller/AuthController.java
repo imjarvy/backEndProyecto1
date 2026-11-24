@@ -20,6 +20,8 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +36,7 @@ public class AuthController {
     private final AuthService authService;
     private final SessionService sessionService;
     private final OAuthService oauthService;
+    private final JwtDecoder jwtDecoder;
 
     @Value("${security.jwt.cookie-name:AUTH_TOKEN}")
     private String cookieName;
@@ -81,9 +84,16 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
-            @AuthenticationPrincipal Jwt jwt) {
-        if (jwt != null) {
-            sessionService.revokeAuthenticationSession(jwt.getId());
+            @CookieValue(name = "${security.jwt.cookie-name:AUTH_TOKEN}",
+                    required = false) String token) {
+        if (token != null && !token.isBlank()) {
+            try {
+                sessionService.revokeAuthenticationSession(
+                        jwtDecoder.decode(token).getId()
+                );
+            } catch (JwtException exception) {
+                // Expired or invalid cookies can still be cleared.
+            }
         }
 
         return ResponseEntity.noContent()
