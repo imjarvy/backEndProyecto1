@@ -25,7 +25,8 @@ class UserServiceRoleNamesTests {
         userRepository,
         mock(PasswordRecoveryTokenRepository.class),
         mock(UserMapper.class),
-        mock(PasswordEncoder.class)
+        mock(PasswordEncoder.class),
+        mock(RegistrationService.class)
 );
 
     @Test
