@@ -17,8 +17,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,6 +26,8 @@ class UserServicePasswordTests {
     private final UserRepository userRepository = mock(UserRepository.class);
     private final UserMapper userMapper = mock(UserMapper.class);
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(4);
+    private final RegistrationService registrationService =
+            mock(RegistrationService.class);
 
     private UserService userService;
 
@@ -37,12 +37,13 @@ class UserServicePasswordTests {
                 userRepository,
                 mock(PasswordRecoveryTokenRepository.class),
                 userMapper,
-                passwordEncoder
+                passwordEncoder,
+                registrationService
         );
     }
 
     @Test
-    void createStoresEncodedPassword() {
+    void createUsesRegistrationFlow() {
         CreateUserDTO dto = new CreateUserDTO();
         dto.setName("Ana");
         dto.setEmail("ana@example.com");
@@ -51,24 +52,13 @@ class UserServicePasswordTests {
         User user = new User();
         UserResponseDTO response = new UserResponseDTO(1L, "Ana", "ana@example.com");
 
-        when(userRepository.existsByEmail(dto.getEmail())).thenReturn(false);
-        when(userMapper.toEntity(eq(dto), anyString())).thenReturn(user);
-        when(userRepository.save(user)).thenReturn(user);
+        when(registrationService.register(dto)).thenReturn(user);
         when(userMapper.toResponseDTO(user)).thenReturn(response);
 
-        userService.create(dto);
+        assertEquals(response, userService.create(dto));
 
-        verify(userMapper).toEntity(
-                eq(dto),
-                org.mockito.ArgumentMatchers.argThat(encodedPassword ->
-                        !dto.getPassword().equals(encodedPassword)
-                                && passwordEncoder.matches(
-                                        dto.getPassword(),
-                                        encodedPassword
-                                )
-                )
-        );
-        verify(userRepository).save(user);
+        verify(registrationService).register(dto);
+        verify(userMapper).toResponseDTO(user);
     }
 
     @Test

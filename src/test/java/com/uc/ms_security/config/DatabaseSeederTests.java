@@ -203,6 +203,46 @@ class DatabaseSeederTests {
                 "Phase"
         );
         verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/phases/{id}/groups",
+                "POST",
+                "CompetitionGroup"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/phases/{id}/groups",
+                "GET",
+                "CompetitionGroup"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/groups/{id}",
+                "GET",
+                "CompetitionGroup"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/groups/{id}",
+                "PATCH",
+                "CompetitionGroup"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/groups/{id}",
+                "DELETE",
+                "CompetitionGroup"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/groups/{id}/teams",
+                "POST",
+                "CompetitionGroup"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/groups/{id}/teams",
+                "GET",
+                "CompetitionGroup"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
+                "/api/groups/{id}/teams/{id}",
+                "DELETE",
+                "CompetitionGroup"
+        );
+        verify(permissionRepository).findByUrlAndMethodAndEntity(
                 "/api/matches",
                 "GET",
                 "Match"

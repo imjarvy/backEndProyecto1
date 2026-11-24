@@ -7,7 +7,6 @@ import com.uc.ms_security.dto.user.UserResponseDTO;
 import com.uc.ms_security.dto.user.UserRoleNamesResponseDTO;
 import com.uc.ms_security.dto.user.UserRolesResponseDTO;
 import com.uc.ms_security.dto.user.UserSessionsResponseDTO;
-import com.uc.ms_security.entity.AuthProvider;
 import com.uc.ms_security.entity.User;
 import com.uc.ms_security.exception.ApplicationException;
 import com.uc.ms_security.exception.ErrorCase;
@@ -35,17 +34,10 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final RegistrationService registrationService;
+
     public UserResponseDTO create(CreateUserDTO dto) {
-        if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new ApplicationException(
-                    ErrorCase.ALREADY_EXISTS,
-                    "Ya existe un usuario con este email"
-            );
-        }
-        String encodedPassword = passwordEncoder.encode(dto.getPassword());
-        User user = userMapper.toEntity(dto, encodedPassword);
-        user.setAuthProvider(AuthProvider.LOCAL_PASSWORD);
-        User savedUser = userRepository.save(user);
+        User savedUser = registrationService.register(dto);
         return userMapper.toResponseDTO(savedUser);
     }
     public List<UserResponseDTO> findAll() {
