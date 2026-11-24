@@ -1,4 +1,4 @@
-USE security_ms_db_martes;;
+USE security_ms_db_martes;
 
 SET @auth_provider_column_exists = (
     SELECT COUNT(*)
